@@ -9,6 +9,8 @@ def web():
             <body>
                 <h1>web-сервер на flask</h1>
                 <a href="/author">author</a>
+                <a href="/image">image</a>
+                <a href="/counter">counter</a>
             </body>
         </html>"""
 
@@ -25,6 +27,8 @@ def author():
                 <p>Группа: """ + group + """</p>
                 <p>Факультет: """ + faculty + """</p>
                 <a href="/web">web</a>
+                <a href="/image">image</a>
+                <a href="/counter">counter</a>
             </body>
         </html>"""
 
@@ -37,6 +41,27 @@ def image():
     <body>
         <h1>Станция метро УРА!</h1>
         <img src="''' + path + '''">
+        <a href="/web">web</a>
+        <a href="/author">author</a>
+        <a href="/counter">counter</a>
+    </body>
+</html>
+'''
+
+count = 0
+
+@app.route('/counter')
+def counter():
+    global count
+    count += 1
+    return '''
+<!doctype html>
+<html>
+    <body>
+        Сколько раз вы сюда заходили: ''' + str(count) + '''
+        <a href="/web">web</a>
+        <a href="/author">author</a>
+        <a href="/image">image</a>
     </body>
 </html>
 '''
