@@ -43,9 +43,13 @@ def author():
 @app.route('/image')
 def image():
     path = url_for("static", filename='stantion.jpeg')
+    style = url_for("static", filename='lab1.css')
     return'''
 <!doctype html>
 <html>
+    <head>
+        <link rel='stylesheet' href="''' + style + '''">
+    </head>
     <body>
         <h1>Станция метро УРА!</h1>
         <img src="''' + path + '''">
