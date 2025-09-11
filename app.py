@@ -6,7 +6,82 @@ app = Flask(__name__)
 def not_found(err):
     return "Вы кажется не туда попали", 404
 
-@app.route("/")
+@app.route('/')
+@app.route('/index')
+def index():
+    style = url_for("static", filename='lab1.css')
+    return '''
+<!doctype html>
+<html>
+    <head>
+        <title>НГТУ, ФБ, Лабораторные работы</title>
+        <link rel='stylesheet' href="''' + style + '''">
+    </head>
+    <body>
+        <header>
+            <h1>НГТУ, ФБ, WEB-программирование, часть 2</h1>
+            <h2>Список лабораторных</h2>
+        </header>
+
+        <ul>
+            <a href="/lab1">Лабраторная работа 1. Введение во Flask</a>
+        </ul>
+
+        <footer>
+            <p>Франк Владислав Валерьевич, ФБИ-31, 3 курс</p>
+            <p>2025</p>
+        </footer>
+    </body>
+</html>
+'''
+@app.route('/lab1')
+def lab1():
+    style = url_for("static", filename='lab1.css')
+    return '''
+<!doctype html>
+<html>
+    <head>
+        <title>Первая лабораторная</title>
+        <link rel='stylesheet' href="''' + style + '''">
+        <style>
+            .menu {
+                text-align: center;
+                margin: 30px 0;
+            }
+            .menu a {
+                display: inline-block;
+                margin: 10px;
+                padding: 15px 25px;
+                border-radius: 5px;
+                font-weight: bold;
+            }
+            .back {
+                text-align: center;
+                margin-top: 30px;
+            }
+            .back a {
+                background: #435a58
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Первая лабораторная работа</h1>
+        
+        <div class="menu">
+            <a href="/lab1/web">Web</a>
+            <a href="/lab1/author">Author</a>
+            <a href="/lab1/image">Image</a>
+            <a href="/lab1/counter">Counter</a>
+            <a href="/lab1/info">Info</a>
+        </div>
+
+        <div class="back">
+            <a href="/">← На главную</a>
+        </div>
+    </body>
+</html>
+'''
+
 @app.route("/lab1/web")
 def web():
     return"""<!doctype html>
