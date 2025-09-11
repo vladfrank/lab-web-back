@@ -62,11 +62,31 @@ def lab1():
             .back a {
                 background: #435a58
             }
+            .content { 
+                background: white;
+                padding: 25px; 
+                border-radius: 12px; 
+                margin-bottom: 30px; 
+                font-size: 20px; 
+            } 
+            .content p { 
+                margin: 0; 
+                text-align: justify; 
+            }
         </style>
     </head>
     <body>
-        <h1>Первая лабораторная работа</h1>
+        <h1>Лабораторная работа 1</h1>
         
+        <div class="content">
+            <p>Flask — фреймворк для создания веб-приложений на языке
+            программирования Python, использующий набор инструментов
+            Werkzeug, а также шаблонизатор Jinja2. Относится к категории так
+            называемых микрофреймворков — минималистичных каркасов
+            веб-приложений, сознательно предоставляющих 
+            лишь самые базовые возможности.</p>
+        </div>
+
         <div class="menu">
             <a href="/lab1/web">Web</a>
             <a href="/lab1/author">Author</a>
