@@ -277,3 +277,57 @@ def created():
     </body>
 </html>
 ''', 201
+
+# Маршрут, который вызывает ошибку на сервере (деление на ноль)
+@app.route('/server_error')
+def cause_server_error():
+    result = 10 / 0 
+    return "Этот код никогда не выполнится"
+
+@app.errorhandler(500)
+def internal_server_error(err):
+    style = url_for("static", filename='lab1.css')
+    return '''
+    <!doctype html>
+    <html>
+    <head>
+        <title>404</title>
+        <link rel='stylesheet' href="''' + style + '''">
+        <style>
+            body {
+                background: #f8f9fa;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .error {
+                text-align: center;
+                background: white;
+                padding: 40px;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                max-width: 500px;
+                width: 100%;
+            }
+            .error-code {
+                font-size: 80px;
+                font-weight: bold;
+                color: #dc3545;
+                margin-bottom: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="error">
+            <div class="error-code">500</div>
+            <h1>Ошибка на сервере</h1>
+            <p>
+                Произошла внутренняя ошибка сервера. 
+                Наши инженеры уже работают над решением проблемы.
+                Пожалуйста, попробуйте позже.
+            </p>
+            <a href="/">На главную</a>
+        </div>
+    </body>
+    </html>
+    ''', 500
