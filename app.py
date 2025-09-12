@@ -2,9 +2,59 @@ from flask import Flask, url_for, request, redirect
 import datetime
 app = Flask(__name__)
 
+class PaymentRequired(Exception):
+    code = 402
+    description = 'Payment Required'
+
+class ImATeapot(Exception):
+    code = 418
+    description = "I'm a teapot"
+
 @app.errorhandler(404)
 def not_found(err):
-    return "Вы кажется не туда попали", 404
+    style = url_for("static", filename='lab1.css')
+    return '''
+    <!doctype html>
+    <html>
+    <head>
+        <title>404</title>
+        <link rel='stylesheet' href="''' + style + '''">
+        <style>
+            body {
+                background: #f8f9fa;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .error {
+                text-align: center;
+                background: white;
+                padding: 40px;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                max-width: 500px;
+                width: 100%;
+            }
+            .error-code {
+                font-size: 80px;
+                font-weight: bold;
+                color: #dc3545;
+                margin-bottom: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="error">
+            <div class="error-code">404</div>
+            <h1>Страница не найдена</h1>
+            <p>
+                Иди проверяй, что ты тут мне понавводил!
+            </p>
+            <a href="/">На главную</a>
+        </div>
+    </body>
+    </html>
+    ''', 404
 
 @app.errorhandler(400)
 def bad_request(err):
@@ -14,7 +64,7 @@ def bad_request(err):
 def unauthorized(err):
     return "Не авторизован, нам нужны твои данные!", 401
 
-@app.errorhandler(402)
+@app.errorhandler(PaymentRequired)
 def payment_required(err):
     return "Отдай мне свои деньги", 402
 
@@ -26,7 +76,7 @@ def forbidden(err):
 def method_not_allowed(err):
     return "Метод не поддерживается, разберись уже чего ты хочешь", 405
 
-@app.errorhandler(418)
+@app.errorhandler(ImATeapot)
 def im_a_teapot(err):
     return "Ну ты даёшь, посмотри видео для чайников", 418
 
