@@ -6,6 +6,30 @@ app = Flask(__name__)
 def not_found(err):
     return "Вы кажется не туда попали", 404
 
+@app.errorhandler(400)
+def bad_request(err):
+    return "Некорректный запрос, попробуй снова", 400
+
+@app.errorhandler(401)
+def unauthorized(err):
+    return "Не авторизован, нам нужны твои данные!", 401
+
+@app.errorhandler(402)
+def payment_required(err):
+    return "Отдай мне свои деньги", 402
+
+@app.errorhandler(403)
+def forbidden(err):
+    return "Запрещено, вон от сюда", 403
+
+@app.errorhandler(405)
+def method_not_allowed(err):
+    return "Метод не поддерживается, разберись уже чего ты хочешь", 405
+
+@app.errorhandler(418)
+def im_a_teapot(err):
+    return "Ну ты даёшь, посмотри видео для чайников", 418
+
 @app.route('/')
 @app.route('/index')
 def index():
