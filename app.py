@@ -117,37 +117,6 @@ def lab1():
     <head>
         <title>Первая лабораторная</title>
         <link rel='stylesheet' href="''' + style + '''">
-        <style>
-            .menu {
-                text-align: center;
-                margin: 30px 0;
-            }
-            .menu a {
-                display: inline-block;
-                margin: 10px;
-                padding: 15px 25px;
-                border-radius: 5px;
-                font-weight: bold;
-            }
-            .back {
-                text-align: center;
-                margin-top: 30px;
-            }
-            .back a {
-                background: #435a58
-            }
-            .content { 
-                background: white;
-                padding: 25px; 
-                border-radius: 12px; 
-                margin-bottom: 30px; 
-                font-size: 20px; 
-            } 
-            .content p { 
-                margin: 0; 
-                text-align: justify; 
-            }
-        </style>
     </head>
     <body>
         <h1>Лабораторная работа 1</h1>
@@ -161,15 +130,17 @@ def lab1():
             лишь самые базовые возможности.</p>
         </div>
 
+        <h2>Список роутов</h2>
         <div class="menu">
             <a href="/lab1/web">Web</a>
             <a href="/lab1/author">Author</a>
             <a href="/lab1/image">Image</a>
             <a href="/lab1/counter">Counter</a>
             <a href="/lab1/info">Info</a>
+            <a href="/lab1/created">Created</a>
+            <a href="/server_error">Server_error</a>
         </div>
-
-        <div class="back">
+        <div>
             <a href="/">← На главную</a>
         </div>
     </body>
