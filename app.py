@@ -213,7 +213,8 @@ def author():
 def image():
     path = url_for("static", filename='stantion.jpeg')
     style = url_for("static", filename='lab1.css')
-    return'''
+    
+    response = '''
 <!doctype html>
 <html>
     <head>
@@ -228,6 +229,17 @@ def image():
     </body>
 </html>
 '''
+    
+    from flask import Response
+    resp = Response(response)
+    
+    # язык контента
+    resp.headers['Content-Language'] = 'ru' 
+    
+    resp.headers['X-Developer-Name'] = 'Vladislav Frank'  # имя разработчика
+    resp.headers['X-Custom-Header'] = 'Lbr1_Image'  # произвольный заголовок
+    
+    return resp
 
 count = 0
 
