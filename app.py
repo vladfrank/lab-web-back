@@ -1,4 +1,5 @@
 from flask import Flask, url_for, request, redirect
+from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, MethodNotAllowed
 import datetime
 app = Flask(__name__)
 
@@ -107,11 +108,11 @@ def not_found(err):
     </html>
     ''', 404
 
-@app.errorhandler(400)
+@app.errorhandler(BadRequest)
 def bad_request(err):
     return "Некорректный запрос, попробуй снова", 400
 
-@app.errorhandler(401)
+@app.errorhandler(Unauthorized)
 def unauthorized(err):
     return "Не авторизован, нам нужны твои данные!", 401
 
@@ -119,17 +120,42 @@ def unauthorized(err):
 def payment_required(err):
     return "Отдай мне свои деньги", 402
 
-@app.errorhandler(403)
+@app.errorhandler(Forbidden)
 def forbidden(err):
     return "Запрещено, вон от сюда", 403
 
-@app.errorhandler(405)
+@app.errorhandler(MethodNotAllowed)
 def method_not_allowed(err):
     return "Метод не поддерживается, разберись уже чего ты хочешь", 405
 
 @app.errorhandler(ImATeapot)
 def im_a_teapot(err):
     return "Ну ты даёшь, посмотри видео для чайников", 418
+
+# вызов ошибок
+@app.route('/test400')
+def test_400():
+    raise BadRequest()
+
+@app.route('/test401')
+def test_401():
+    raise Unauthorized()
+
+@app.route('/test402')
+def test_402():
+    raise PaymentRequired()
+
+@app.route('/test403')
+def test_403():
+    raise Forbidden()
+
+@app.route('/test405')
+def test_405():
+    raise MethodNotAllowed()
+
+@app.route('/test418')
+def test_418():
+    raise ImATeapot()
 
 @app.route('/')
 @app.route('/index')
@@ -316,7 +342,7 @@ def created():
 @app.route('/server_error')
 def cause_server_error():
     result = 10 / 0 
-    return "Этот код никогда не выполнится"
+    return result
 
 @app.errorhandler(500)
 def internal_server_error(err):
@@ -325,7 +351,7 @@ def internal_server_error(err):
     <!doctype html>
     <html>
     <head>
-        <title>404</title>
+        <title>500</title>
         <link rel='stylesheet' href="''' + style + '''">
         <style>
             body {
