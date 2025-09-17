@@ -1,4 +1,4 @@
-from flask import Flask, url_for, request, redirect, abort
+from flask import Flask, url_for, request, redirect, abort, render_template
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, MethodNotAllowed
 import datetime
 app = Flask(__name__)
@@ -426,3 +426,6 @@ def add_flower(name):
 </html>
 '''
 
+@app.route('/lab2/example')
+def example():
+    return render_template('example.html')
