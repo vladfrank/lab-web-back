@@ -176,6 +176,7 @@ def index():
 
         <ul>
             <a href="/lab1">Лабраторная работа 1. Введение во Flask</a>
+            <a href="/lab2/">Лабораторная работа 2. Шаблоны в Flask</a>
         </ul>
 
         <footer>
@@ -781,7 +782,6 @@ solaris_cars = [
     }
 ]
 
-# Роут для отображения всех Hyundai Solaris
 @app.route('/lab2/solaris')
 def solaris_gallery():
     return render_template('solaris.html', cars=solaris_cars)

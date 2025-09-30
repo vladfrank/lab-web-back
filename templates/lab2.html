@@ -5,11 +5,24 @@
 
 {# основной контент #}
 {% block main %}
-    <h1>Шаблоны</h1>
-    <div>Тема лабораторной - шаблоны. Список сделанных страниц:</div>
-    <ol>
-        <li>
-            <a href="/lab2/example">example</a>
-        </li>
-    </ol>
+    <h1>Лабораторная работа 2</h1>
+    
+    <div class="content">
+        <p>Вторая лабораторная работа по WEB-программированию. Шаблоны в Flask.</p>
+
+        <h2>Список роутов</h2>
+        <div class="menu">
+            <a href="/lab2/flowers/0">Цветок по ID</a>
+            <a href="/lab2/all_flowers">Все цветы</a>
+            <a href="/lab2/add_flower/гвоздика">Добавить цветок</a>
+            <a href="/lab2/clear_flowers">Очистить цветы</a>
+            <a href="/lab2/calc/">Калькулятор</a>
+            <a href="/lab2/books">Книги</a>
+            <a href="/lab2/solaris">Hyundai Solaris</a>
+            <a href="/lab2/example">Пример страницы</a>
+            <a href="/lab2/filters">Фильтры</a>
+            <a href="/lab2/a">Без слэша</a>
+            <a href="/lab2/a/">Со слэшем</a>
+        </div>
+    </div>
 {% endblock %}
