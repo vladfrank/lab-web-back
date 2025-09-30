@@ -514,3 +514,45 @@ def lab2():
 def filters():
     phrase = "О <b>сколько</b> <u>нам</u> <i>открытий</i> чудных..."
     return render_template('filter.html', phrase = phrase)
+
+# калькулятор с двумя числами
+@app.route('/lab2/calc/<int:a>/<int:b>')
+def calc(a, b):
+    # математические операции
+    sum_result = a + b
+    min_result = a - b
+    umn_result = a * b
+    del_result = a / b if b != 0 else 'деление на ноль'
+    step_result = a ** b
+    
+    # Возвращаем HTML-страницу с результатами вычислений
+    return f'''
+<!doctype html>
+<html>
+    <head>
+        <title>Калькулятор</title>
+    </head>
+    <body>
+        <h1>Расчёт с параметрами:</h1>
+        <p>
+            {a} + {b} = {sum_result}<br>
+            {a} - {b} = {min_result}<br>
+            {a} × {b} = {umn_result}<br>
+            {a} / {b} = {del_result}<br>
+            {a}^{b} = {step_result}
+        </p>
+    </body>
+</html>
+'''
+
+# перенаправления с calc/ на calc/1/1
+@app.route('/lab2/calc/')
+def calc_default():
+    # по умолчанию 1 и 1
+    return redirect('/lab2/calc/1/1')
+
+# перенаправления с <int:a> на <int:a>/1
+@app.route('/lab2/calc/<int:a>')
+def calc_single(a):
+    # калькулятор с первым числом a и вторым числом 1
+    return redirect(f'/lab2/calc/{a}/1')
