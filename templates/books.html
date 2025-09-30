@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block lab %}Список книг{% endblock %}
+
+{% block main %}
+    <h1>Список книг</h1>
+    
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Автор</th>
+                <th>Название книги</th>
+                <th>Жанр</th>
+                <th>Количество страниц</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in books %}
+            <tr>
+                <td>{{ book.author }}</td>
+                <td>{{ book.title }}</td>
+                <td>{{ book.genre }}</td>
+                <td>{{ book.pages }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <p>Всего книг в списке: {{ books|length }}</p>
+{% endblock %}
