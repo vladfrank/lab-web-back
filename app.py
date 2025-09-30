@@ -576,3 +576,212 @@ books = [
 @app.route('/lab2/books')
 def books_list():
     return render_template('books.html', books=books)
+
+# солярисы разных поколений и рестайлингов
+solaris_cars = [
+    {
+        "id": 1,
+        "name": "Hyundai Solaris I (2010-2014)",
+        "generation": "Первое поколение",
+        "years": "2010-2014",
+        "description": "Первое поколение Solaris для российского рынка. Седан на платформе Hyundai RB.",
+        "image": "solaris_2010.jpg",
+        "engine": "1.4L / 1.6L",
+        "features": "Начало эпохи Solaris в России"
+    },
+    {
+        "id": 2,
+        "name": "Hyundai Solaris I Рестайлинг (2014-2017)",
+        "generation": "Первое поколение (рестайлинг)",
+        "years": "2014-2017", 
+        "description": "Рестайлинг первой генерации. Изменена передняя оптика, бампер, решётка радиатора.",
+        "image": "solaris_2014.jpg",
+        "engine": "1.4L / 1.6L",
+        "features": "Обновлённый дизайн, новые опции"
+    },
+    {
+        "id": 3,
+        "name": "Hyundai Solaris II (2017-2020)",
+        "generation": "Второе поколение",
+        "years": "2017-2020",
+        "description": "Полностью новая платформа K2. Современный дизайн в стиле Fluidic Sculpture 2.0.",
+        "image": "solaris_2017.jpg",
+        "engine": "1.4L / 1.6L",
+        "features": "Новая платформа, мультимедийная система"
+    },
+    {
+        "id": 4, 
+        "name": "Hyundai Solaris II Рестайлинг (2020-2023)",
+        "generation": "Второе поколение (рестайлинг)",
+        "years": "2020-2023",
+        "description": "Рестайлинг второго поколения. Полностью переработанная передняя часть, новая оптика.",
+        "image": "solaris_2020.jpg",
+        "engine": "1.4L / 1.6L",
+        "features": "LED-оптика, обновлённая решётка"
+    },
+    {
+        "id": 5,
+        "name": "Hyundai Solaris III (2023-н.в.)",
+        "generation": "Третье поколение", 
+        "years": "2023-настоящее время",
+        "description": "Современный дизайн в духе новых Hyundai. Увеличенные габариты, премиальная отделка.",
+        "image": "solaris_2023.jpeg",
+        "engine": "1.5L / 1.6L",
+        "features": "Цифровая приборная панель, ADAS"
+    },
+    {
+        "id": 6,
+        "name": "Hyundai Solaris хетчбэк (2011-2014) <b>ЛУЧШИЙ</b>",
+        "generation": "Первое поколение (хетчбэк)",
+        "years": "2011-2014",
+        "description": "Хетчбэк версия первого поколения Solaris. Компактный и практичный.",
+        "image": "solaris_hatch_2011.jpeg",
+        "engine": "1.4L / 1.6L", 
+        "features": "Практичный хетчбэк, маневренность"
+    },
+    {
+        "id": 7,
+        "name": "Hyundai Solaris седан (2010-2017)",
+        "generation": "Классический седан",
+        "years": "2010-2017",
+        "description": "Классический седан - самый популярный кузов Solaris в России.",
+        "image": "solaris_sedan_classic.jpeg",
+        "engine": "1.4L / 1.6L",
+        "features": "Просторный багажник, комфорт"
+    },
+    {
+        "id": 8,
+        "name": "Hyundai Solaris Active (2018)",
+        "generation": "Специальная версия",
+        "years": "2018",
+        "description": "Версия с увеличенным клиренсом и защитой кузова для плохих дорог.",
+        "image": "solaris_active.jpeg",
+        "engine": "1.6L",
+        "features": "Увеличенный клиренс, защита"
+    },
+    {
+        "id": 9,
+        "name": "Hyundai Solaris Business (2015)",
+        "generation": "Бизнес-версия",
+        "years": "2015", 
+        "description": "Комплектация для корпоративных клиентов с улучшенной отделкой.",
+        "image": "solaris_business.png",
+        "engine": "1.6L",
+        "features": "Кожаный салон, климат-контроль"
+    },
+    {
+        "id": 10,
+        "name": "Hyundai Solaris Limited (2021)",
+        "generation": "Лимитированная версия",
+        "years": "2021",
+        "description": "Лимитированная версия с эксклюзивной отделкой и дополнительным оборудованием.",
+        "image": "solaris_limited.jpg",
+        "engine": "1.6L",
+        "features": "Эксклюзивный дизайн, полный пакет опций"
+    },
+    {
+        "id": 11,
+        "name": "Hyundai Solaris I Базовая (2010)",
+        "generation": "Базовая комплектация",
+        "years": "2010",
+        "description": "Самая доступная комплектация первого поколения. Минимум опций, максимум надежности.",
+        "image": "solaris_base_2010.jpeg",
+        "engine": "1.4L",
+        "features": "Экономичность, надежность"
+    },
+    {
+        "id": 12,
+        "name": "Hyundai Solaris II Premium (2018)",
+        "generation": "Премиум комплектация", 
+        "years": "2018",
+        "description": "Максимальная комплектация второго поколения с полным пакетом опций.",
+        "image": "solaris_premium_2018.jpeg",
+        "engine": "1.6L",
+        "features": "Кожа, подогревы, мультимедиа"
+    },
+    {
+        "id": 13,
+        "name": "Hyundai Solaris Sport (2016)",
+        "generation": "Спортивная версия",
+        "years": "2016",
+        "description": "Спортивный обвес, улучшенная подвеска, спортивные сиденья.",
+        "image": "solaris_sport.jpeg",
+        "engine": "1.6L",
+        "features": "Спортивный дизайн, улучшенная динамика"
+    },
+    {
+        "id": 14,
+        "name": "Hyundai Solaris Urban (2019)",
+        "generation": "Городская версия",
+        "years": "2019",
+        "description": "Специальная версия для городской эксплуатации с улучшенной маневренностью.",
+        "image": "solaris_urban.jpeg", 
+        "engine": "1.6L",
+        "features": "Парктроники, камера, компактность"
+    },
+    {
+        "id": 15,
+        "name": "Hyundai Solaris Family (2015)",
+        "generation": "Семейная версия",
+        "years": "2015",
+        "description": "Версия с усиленной безопасностью и дополнительными детскими опциями.",
+        "image": "solaris_family.jpeg",
+        "engine": "1.6L",
+        "features": "Детские кресла, защита"
+    },
+    {
+        "id": 16,
+        "name": "Hyundai Solaris Taxi (2013)",
+        "generation": "Такси-версия",
+        "years": "2013", 
+        "description": "Специальная подготовка для работы в такси. Усиленная подвеска, экономичный двигатель.",
+        "image": "solaris_taxi.jpeg",
+        "engine": "1.6L",
+        "features": "Таксомоторный пакет, экономичность"
+    },
+    {
+        "id": 17,
+        "name": "Hyundai Solaris Winter (2017)",
+        "generation": "Зимний пакет",
+        "years": "2017",
+        "description": "Комплектация с дополнительной подготовкой для зимней эксплуатации.",
+        "image": "solaris_winter.jpg",
+        "engine": "1.6L",
+        "features": "Подогревы, зимняя резина"
+    },
+    {
+        "id": 18,
+        "name": "Hyundai Solaris Comfort (2022)",
+        "generation": "Комфорт-версия",
+        "years": "2022",
+        "description": "Улучшенная шумоизоляция, комфортная подвеска, премиальная отделка салона.",
+        "image": "solaris_comfort.jpeg",
+        "engine": "1.6L", 
+        "features": "Комфорт, тишина в салоне"
+    },
+    {
+        "id": 19,
+        "name": "Hyundai Solaris Eco (2020)",
+        "generation": "Эко-версия",
+        "years": "2020",
+        "description": "Версия с системой старт-стоп и улучшенной аэродинамикой для снижения расхода.",
+        "image": "solaris_eco.jpg",
+        "engine": "1.6L",
+        "features": "Эко-режим, низкий расход"
+    },
+    {
+        "id": 20,
+        "name": "Hyundai Solaris Anniversary (2021)",
+        "generation": "Юбилейная версия",
+        "years": "2021",
+        "description": "Специальная версия к 10-летию Solaris в России с эксклюзивным дизайном.",
+        "image": "solaris_anniversary.jpg",
+        "engine": "1.6L",
+        "features": "Эксклюзив, памятная отделка"
+    }
+]
+
+# Роут для отображения всех Hyundai Solaris
+@app.route('/lab2/solaris')
+def solaris_gallery():
+    return render_template('solaris.html', cars=solaris_cars)
