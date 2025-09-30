@@ -403,94 +403,64 @@ def a():
 def a2():
         return 'со слэшем'
 
-flower_list = ['роза','тюльпан','незабудка','ромашка']
+flowers = [
+    {"id": 0, "name": "роза", "price": 300},
+    {"id": 1, "name": "тюльпан", "price": 310},
+    {"id": 2, "name": "незабудка", "price": 320},
+    {"id": 3, "name": "ромашка", "price": 330},
+    {"id": 4, "name": "георгин", "price": 300},
+    {"id": 5, "name": "гладиолус", "price": 310}
+]
 
+# Просмотр конкретного цветка
 @app.route('/lab2/flowers/<int:flower_id>')
-def flowers(flower_id):
-    # существует ли цветок с таким ID
-    if flower_id >= len(flower_list):
+def flower_detail(flower_id):
+    if flower_id >= len(flowers):
         abort(404)
-    else:
-        # HTML-страница с информацией о цветке
-        return f'''
-<!doctype html>
-<html>
-    <head>
-        <title>Информация о цветке</title>
-    </head>
-    <body>
-        <h1>Информация о цветке</h1>
-        <p><strong>ID цветка:</strong> {flower_id}</p>
-        <p><strong>Название:</strong> {flower_list[flower_id]}</p>
-        <p><a href="/lab2/all_flowers">Посмотреть все цветы</a></p>
-    </body>
-</html>
-'''
+    flower = flowers[flower_id]
+    return render_template('flower_detail.html', flower=flower)
 
+# Добавление цветка с помощью url
 @app.route('/lab2/add_flower/<name>')
 def add_flower(name):
-    flower_list.append(name)
-    return f'''
-<!doctype html>
-<html>
-    <body>
-    <h1>Добавлен новый цветок</h1>
-    <p>Название нового цветка: {name}</p>
-    <p>Всего цветов: {len(flower_list)}</p>
-    <p>Полный список: {flower_list}</p>
-    </body>
-</html>
-'''
+    new_id = len(flowers)
+    flowers.append({"id": new_id, "name": name, "price": 300})
+    return redirect('/lab2/all_flowers')
 
-# когда имя цветка не указано
+# Добавление цветка через форму
+@app.route('/lab2/add_flower_form', methods=['POST'])
+def add_flower_form():
+    name = request.form.get('flower_name', '').strip()
+    new_id = len(flowers)
+    flowers.append({"id": new_id, "name": name, "price": 300})
+    return redirect('/lab2/all_flowers')
+
+# Ошибка при добавлении без имени
 @app.route('/lab2/add_flower/')
 def add_flower_no_name():
-    # Возвращаем ошибку 400
     return 'вы не задали имя цветка', 400
 
-# для вывода всех цветов и их количества
+# Страница всех цветов
 @app.route('/lab2/all_flowers')
 def all_flowers():
-    # HTML-список всех цветов
-    flowers_html = ''
-    for i, flower in enumerate(flower_list):
-        flowers_html += f'<li>ID {i}: {flower}</li>'
-    
-    return f'''
-<!doctype html>
-<html>
-    <head>
-        <title>Все цветы</title>
-    </head>
-    <body>
-        <h1>Список всех цветов</h1>
-        <p><strong>Общее количество цветов:</strong> {len(flower_list)}</p>
-        <ul>
-            {flowers_html}
-        </ul>
-        <p><a href="/lab2/clear_flowers">Очистить список цветов</a></p>
-    </body>
-</html>
-'''
+    return render_template('all_flowers.html', flowers=flowers)
 
-# очисткв списка цветов
+# Удаление конкретного цветка
+@app.route('/lab2/del_flower/<int:flower_id>')
+def del_flower(flower_id):
+    if flower_id >= len(flowers):
+        abort(404)
+    flowers.pop(flower_id)
+    # Обновляем ID
+    for i, flower in enumerate(flowers):
+        flower['id'] = i
+    return redirect('/lab2/all_flowers')
+
+# Очистка всех цветов
 @app.route('/lab2/clear_flowers')
 def clear_flowers():
-    # Очищаем список цветов
-    flower_list.clear()
-    return '''
-<!doctype html>
-<html>
-    <head>
-        <title>Список очищен</title>
-    </head>
-    <body>
-        <h1>Список цветов очищен</h1>
-        <p>Все цветы были удалены из списка.</p>
-        <p><a href="/lab2/all_flowers">Вернуться к списку цветов</a></p>
-    </body>
-</html>
-'''
+    flowers.clear()
+    return redirect('/lab2/all_flowers')
 
 @app.route('/lab2/example')
 def example():
