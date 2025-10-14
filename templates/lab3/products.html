@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 3{% endblock %}
+
+{% block main %}
+    <h1>Поиск пива</h1>
+    
+    <form method="get">
+        <div class="order-section">
+            <div class="section-title">Диапазон цен:</div>
+            
+            <div>
+                <label>Минимальная цена:</label>
+                <input type="number" name="min_price" value="{{ min_price or '' }}" 
+                       placeholder="{{ min_product_price }}" min="0">
+            </div>
+            
+            <div>
+                <label>Максимальная цена:</label>
+                <input type="number" name="max_price" value="{{ max_price or '' }}" 
+                       placeholder="{{ max_product_price }}" min="0">
+            </div>
+            
+            <div class="text-center">
+                <button type="submit" name="action" value="search" class="btn btn-primary">Искать</button>
+                <button type="submit" name="action" value="reset" class="btn btn-danger">Сброс</button>
+            </div>
+        </div>
+    </form>
+
+    {% if products %}
+        <div class="search-results">
+            <h2>Найдено товаров: {{ products|length }}</h2>
+            
+            <div class="products-grid">
+                {% for product in products %}
+                <div class="product-card">
+                    <h3>{{ product.name }}</h3>
+                    <div class="product-price">{{ product.price }} руб.</div>
+                    <div class="product-details">
+                        <div><strong>Бренд:</strong> {{ product.brand }}</div>
+                        <div><strong>Тип:</strong> {{ product.type }}</div>
+                        <div><strong>Алкоголь:</strong> {{ product.alcohol }}%</div>
+                        <div><strong>Объем:</strong> {{ product.volume }} л</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% elif searched %}
+        <div class="no-results">
+            <h2>Не найдено ни одного сорта товара</h2>
+            <p>Попробуйте изменить диапазон цен</p>
+        </div>
+    {% endif %}
+{% endblock %}
