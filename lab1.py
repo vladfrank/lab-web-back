@@ -1,5 +1,5 @@
-from flask import Blueprint, url_for, request, redirect, abort, render_template
-from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, MethodNotAllowed
+from flask import Blueprint, url_for, request, redirect
+from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, MethodNotAllowed, ImATeapot
 import datetime
 lab1 = Blueprint('lab1', __name__)
 from flask import request
@@ -8,6 +8,29 @@ import datetime
 # хранение лога
 access_log = []
 
+@lab1.errorhandler(BadRequest)
+def bad_request(err):
+    return "Некорректный запрос, попробуй снова", 400
+
+
+@lab1.errorhandler(Unauthorized)
+def unauthorized(err):
+    return "Не авторизован, нам нужны твои данные!", 401
+
+
+@lab1.errorhandler(Forbidden)
+def forbidden(err):
+    return "Запрещено, вон от сюда", 403
+
+
+@lab1.errorhandler(MethodNotAllowed)
+def method_not_allowed(err):
+    return "Метод не поддерживается, разберись уже чего ты хочешь", 405
+
+
+@lab1.errorhandler(ImATeapot)
+def im_a_teapot(err):
+    return "Ну ты даёшь, посмотри видео для чайников", 418
 
 # вызов ошибок
 @lab1.route('/test400')
@@ -18,11 +41,6 @@ def test_400():
 @lab1.route('/test401')
 def test_401():
     raise Unauthorized()
-
-
-@lab1.route('/test402')
-def test_402():
-    raise PaymentRequired()
 
 
 @lab1.route('/test403')
@@ -206,3 +224,13 @@ def created():
 def cause_server_error():
     result = 10 / 0 
     return result
+
+class PaymentRequired(Exception):
+    code = 402
+    description = 'Payment Required'
+
+
+class ImATeapot(Exception):
+    code = 418
+    description = "I'm a teapot"
+
