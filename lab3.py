@@ -96,6 +96,14 @@ def settings():
     padding = request.cookies.get('padding')
     return render_template('lab3/settings.html', color=color, background=background, font_size=font_size, padding=padding)
 
+@lab3.route('/lab3/del_style')
+def del_style():
+    resp = make_response(redirect('/lab3/settings'))
+    resp.delete_cookie('color')
+    resp.delete_cookie('background')
+    resp.delete_cookie('font_size')
+    resp.delete_cookie('padding')
+    return resp
 
 from datetime import datetime
 
