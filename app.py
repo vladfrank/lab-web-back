@@ -108,7 +108,7 @@ def not_found(err):
 @app.route('/')
 @app.route('/index')
 def index():
-    style = url_for("static", filename='lab1.css')
+    style = url_for("static", filename='lab1/lab1.css')
     return '''
 <!doctype html>
 <html>

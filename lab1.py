@@ -60,7 +60,7 @@ def test_418():
 
 @lab1.route('/lab1')
 def lab():
-    style = url_for("static", filename='lab1.css')
+    style = url_for("static", filename='lab1/lab1.css')
     return '''
 <!doctype html>
 <html>
@@ -135,8 +135,8 @@ def author():
 
 @lab1.route('/lab1/image')
 def image():
-    path = url_for("static", filename='stantion.jpeg')
-    style = url_for("static", filename='lab1.css')
+    path = url_for("static", filename='lab1/stantion.jpeg')
+    style = url_for("static", filename='lab1/lab1.css')
     
     response = '''
 <!doctype html>

@@ -28,7 +28,7 @@ def flower_detail(flower_id):
     if flower_id >= len(flowers):
         abort(404)
     flower = flowers[flower_id]
-    return render_template('flower_detail.html', flower=flower)
+    return render_template('lab2/flower_detail.html', flower=flower)
 
 
 # Добавление цветка с помощью url
@@ -57,7 +57,7 @@ def add_flower_no_name():
 # Страница всех цветов
 @lab2.route('/lab2/all_flowers')
 def all_flowers():
-    return render_template('all_flowers.html', flowers=flowers)
+    return render_template('lab2/all_flowers.html', flowers=flowers)
 
 
 # Удаление конкретного цветка
@@ -92,18 +92,18 @@ def example():
         {'name': 'мандарины', 'price': 95},
         {'name': 'манго', 'price': 321},
     ]
-    return render_template('example.html', name=name, group=group, course=course, numlab=numlab, fruits=fruits)
+    return render_template('lab2/example.html', name=name, group=group, course=course, numlab=numlab, fruits=fruits)
 
 
 @lab2.route('/lab2/')
 def lab():
-    return render_template('lab2.html')
+    return render_template('lab2/lab2.html')
 
 
 @lab2.route('/lab2/filters')
 def filters():
     phrase = "О <b>сколько</b> <u>нам</u> <i>открытий</i> чудных..."
-    return render_template('filter.html', phrase = phrase)
+    return render_template('lab2/filter.html', phrase = phrase)
 
 
 
@@ -170,7 +170,7 @@ books = [
 # вывод списка книг с использованием шаблона
 @lab2.route('/lab2/books')
 def books_list():
-    return render_template('books.html', books=books)
+    return render_template('lab2/books.html', books=books)
 
 
 # солярисы разных поколений и рестайлингов
@@ -181,7 +181,7 @@ solaris_cars = [
         "generation": "Первое поколение",
         "years": "2010-2014",
         "description": "Первое поколение Solaris для российского рынка. Седан на платформе Hyundai RB.",
-        "image": "solaris_2010.jpg",
+        "image": "lab2/solaris_2010.jpg",
         "engine": "1.4L / 1.6L",
         "features": "Начало эпохи Solaris в России"
     },
@@ -191,7 +191,7 @@ solaris_cars = [
         "generation": "Первое поколение (рестайлинг)",
         "years": "2014-2017", 
         "description": "Рестайлинг первой генерации. Изменена передняя оптика, бампер, решётка радиатора.",
-        "image": "solaris_2014.jpg",
+        "image": "lab2/solaris_2014.jpg",
         "engine": "1.4L / 1.6L",
         "features": "Обновлённый дизайн, новые опции"
     },
@@ -201,7 +201,7 @@ solaris_cars = [
         "generation": "Второе поколение",
         "years": "2017-2020",
         "description": "Полностью новая платформа K2. Современный дизайн в стиле Fluidic Sculpture 2.0.",
-        "image": "solaris_2017.jpg",
+        "image": "lab2/solaris_2017.jpg",
         "engine": "1.4L / 1.6L",
         "features": "Новая платформа, мультимедийная система"
     },
@@ -211,7 +211,7 @@ solaris_cars = [
         "generation": "Второе поколение (рестайлинг)",
         "years": "2020-2023",
         "description": "Рестайлинг второго поколения. Полностью переработанная передняя часть, новая оптика.",
-        "image": "solaris_2020.jpg",
+        "image": "lab2/solaris_2020.jpg",
         "engine": "1.4L / 1.6L",
         "features": "LED-оптика, обновлённая решётка"
     },
@@ -221,7 +221,7 @@ solaris_cars = [
         "generation": "Третье поколение", 
         "years": "2023-настоящее время",
         "description": "Современный дизайн в духе новых Hyundai. Увеличенные габариты, премиальная отделка.",
-        "image": "solaris_2023.jpeg",
+        "image": "lab2/solaris_2023.jpeg",
         "engine": "1.5L / 1.6L",
         "features": "Цифровая приборная панель, ADAS"
     },
@@ -231,7 +231,7 @@ solaris_cars = [
         "generation": "Первое поколение (хетчбэк)",
         "years": "2011-2014",
         "description": "Хетчбэк версия первого поколения Solaris. Компактный и практичный.",
-        "image": "solaris_hatch_2011.jpeg",
+        "image": "lab2/solaris_hatch_2011.jpeg",
         "engine": "1.4L / 1.6L", 
         "features": "Практичный хетчбэк, маневренность"
     },
@@ -241,7 +241,7 @@ solaris_cars = [
         "generation": "Классический седан",
         "years": "2010-2017",
         "description": "Классический седан - самый популярный кузов Solaris в России.",
-        "image": "solaris_sedan_classic.jpeg",
+        "image": "lab2/solaris_sedan_classic.jpeg",
         "engine": "1.4L / 1.6L",
         "features": "Просторный багажник, комфорт"
     },
@@ -251,7 +251,7 @@ solaris_cars = [
         "generation": "Специальная версия",
         "years": "2018",
         "description": "Версия с увеличенным клиренсом и защитой кузова для плохих дорог.",
-        "image": "solaris_active.jpeg",
+        "image": "lab2/solaris_active.jpeg",
         "engine": "1.6L",
         "features": "Увеличенный клиренс, защита"
     },
@@ -261,7 +261,7 @@ solaris_cars = [
         "generation": "Бизнес-версия",
         "years": "2015", 
         "description": "Комплектация для корпоративных клиентов с улучшенной отделкой.",
-        "image": "solaris_business.png",
+        "image": "lab2/solaris_business.png",
         "engine": "1.6L",
         "features": "Кожаный салон, климат-контроль"
     },
@@ -271,7 +271,7 @@ solaris_cars = [
         "generation": "Лимитированная версия",
         "years": "2021",
         "description": "Лимитированная версия с эксклюзивной отделкой и дополнительным оборудованием.",
-        "image": "solaris_limited.jpg",
+        "image": "lab2/solaris_limited.jpg",
         "engine": "1.6L",
         "features": "Эксклюзивный дизайн, полный пакет опций"
     },
@@ -281,7 +281,7 @@ solaris_cars = [
         "generation": "Базовая комплектация",
         "years": "2010",
         "description": "Самая доступная комплектация первого поколения. Минимум опций, максимум надежности.",
-        "image": "solaris_base_2010.jpeg",
+        "image": "lab2/solaris_base_2010.jpeg",
         "engine": "1.4L",
         "features": "Экономичность, надежность"
     },
@@ -291,7 +291,7 @@ solaris_cars = [
         "generation": "Премиум комплектация", 
         "years": "2018",
         "description": "Максимальная комплектация второго поколения с полным пакетом опций.",
-        "image": "solaris_premium_2018.jpeg",
+        "image": "lab2/solaris_premium_2018.jpeg",
         "engine": "1.6L",
         "features": "Кожа, подогревы, мультимедиа"
     },
@@ -301,7 +301,7 @@ solaris_cars = [
         "generation": "Спортивная версия",
         "years": "2016",
         "description": "Спортивный обвес, улучшенная подвеска, спортивные сиденья.",
-        "image": "solaris_sport.jpeg",
+        "image": "lab2/solaris_sport.jpeg",
         "engine": "1.6L",
         "features": "Спортивный дизайн, улучшенная динамика"
     },
@@ -311,7 +311,7 @@ solaris_cars = [
         "generation": "Городская версия",
         "years": "2019",
         "description": "Специальная версия для городской эксплуатации с улучшенной маневренностью.",
-        "image": "solaris_urban.jpeg", 
+        "image": "lab2/solaris_urban.jpeg", 
         "engine": "1.6L",
         "features": "Парктроники, камера, компактность"
     },
@@ -321,7 +321,7 @@ solaris_cars = [
         "generation": "Семейная версия",
         "years": "2015",
         "description": "Версия с усиленной безопасностью и дополнительными детскими опциями.",
-        "image": "solaris_family.jpeg",
+        "image": "lab2/solaris_family.jpeg",
         "engine": "1.6L",
         "features": "Детские кресла, защита"
     },
@@ -331,7 +331,7 @@ solaris_cars = [
         "generation": "Такси-версия",
         "years": "2013", 
         "description": "Специальная подготовка для работы в такси. Усиленная подвеска, экономичный двигатель.",
-        "image": "solaris_taxi.jpeg",
+        "image": "lab2/solaris_taxi.jpeg",
         "engine": "1.6L",
         "features": "Таксомоторный пакет, экономичность"
     },
@@ -341,7 +341,7 @@ solaris_cars = [
         "generation": "Зимний пакет",
         "years": "2017",
         "description": "Комплектация с дополнительной подготовкой для зимней эксплуатации.",
-        "image": "solaris_winter.jpg",
+        "image": "lab2/solaris_winter.jpg",
         "engine": "1.6L",
         "features": "Подогревы, зимняя резина"
     },
@@ -351,7 +351,7 @@ solaris_cars = [
         "generation": "Комфорт-версия",
         "years": "2022",
         "description": "Улучшенная шумоизоляция, комфортная подвеска, премиальная отделка салона.",
-        "image": "solaris_comfort.jpeg",
+        "image": "lab2/solaris_comfort.jpeg",
         "engine": "1.6L", 
         "features": "Комфорт, тишина в салоне"
     },
@@ -361,7 +361,7 @@ solaris_cars = [
         "generation": "Эко-версия",
         "years": "2020",
         "description": "Версия с системой старт-стоп и улучшенной аэродинамикой для снижения расхода.",
-        "image": "solaris_eco.jpg",
+        "image": "lab2/solaris_eco.jpg",
         "engine": "1.6L",
         "features": "Эко-режим, низкий расход"
     },
@@ -371,7 +371,7 @@ solaris_cars = [
         "generation": "Юбилейная версия",
         "years": "2021",
         "description": "Специальная версия к 10-летию Solaris в России с эксклюзивным дизайном.",
-        "image": "solaris_anniversary.jpg",
+        "image": "lab2/solaris_anniversary.jpg",
         "engine": "1.6L",
         "features": "Эксклюзив, памятная отделка"
     }
@@ -379,4 +379,4 @@ solaris_cars = [
 
 @lab2.route('/lab2/solaris')
 def solaris_gallery():
-    return render_template('solaris.html', cars=solaris_cars)
+    return render_template('lab2/solaris.html', cars=solaris_cars)
