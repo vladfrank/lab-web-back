@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 3{% endblock %}
+
+{% block main %}
+    <div class="ticket">
+        <div class="ticket-header">
+            <h1>Железнодорожный билет</h1>
+            <div class="ticket-type">
+                {% if age < 18 %}
+                    <span class="child-ticket">Детский билет</span>
+                {% else %}
+                    <span class="adult-ticket">Взрослый билет</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="ticket-body">
+            <div class="ticket-info">
+                <div class="info-row">
+                    <span class="label">Пассажир:</span>
+                    <span class="value">{{ fio }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Возраст:</span>
+                    <span class="value">{{ age }} лет</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Полка:</span>
+                    <span class="value">
+                        {% if shelf == 'lower' %}Нижняя
+                        {% elif shelf == 'upper' %}Верхняя
+                        {% elif shelf == 'side_lower' %}Нижняя боковая
+                        {% elif shelf == 'side_upper' %}Верхняя боковая
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Маршрут:</span>
+                    <span class="value">{{ departure }} → {{ destination }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Дата поездки:</span>
+                    <span class="value">{{ date }}</span>
+                </div>
+            </div>
+
+            <div class="services">
+                <h3>Дополнительные услуги:</h3>
+                <ul>
+                    {% if linen %}<li>Бельё: 75 руб.</li>{% endif %}
+                    {% if baggage %}<li>Багаж: 250 руб.</li>{% endif %}
+                    {% if insurance %}<li>Страховка: 150 руб.</li>{% endif %}
+                </ul>
+            </div>
+
+            <div class="price-calculation">
+                <h3>Расчёт стоимости:</h3>
+                <div class="calculation-row">
+                    <span>Базовый тариф:</span>
+                    <span>{{ base_price }} руб.</span>
+                </div>
+                {% if shelf_surcharge > 0 %}
+                <div class="calculation-row">
+                    <span>Доплата за полку:</span>
+                    <span>{{ shelf_surcharge }} руб.</span>
+                </div>
+                {% endif %}
+                {% if linen %}
+                <div class="calculation-row">
+                    <span>Бельё:</span>
+                    <span>75 руб.</span>
+                </div>
+                {% endif %}
+                {% if baggage %}
+                <div class="calculation-row">
+                    <span>Багаж:</span>
+                    <span>250 руб.</span>
+                </div>
+                {% endif %}
+                {% if insurance %}
+                <div class="calculation-row">
+                    <span>Страховка:</span>
+                    <span>150 руб.</span>
+                </div>
+                {% endif %}
+                <div class="calculation-row total">
+                    <span><strong>Итого:</strong></span>
+                    <span><strong>{{ total_price }} руб.</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ticket-footer">
+            <p>Билет оформлен: {{ timestamp }}</p>
+            <a href="/lab3/ticket" class="btn btn-primary">Оформить новый билет</a>
+        </div>
+    </div>
+{% endblock %}

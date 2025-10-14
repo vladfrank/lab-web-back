@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 3{% endblock %}
+
+{% block main %}
+    <h1>Железнодорожный билет</h1>
+    
+    <form action="/lab3/ticket_result">
+        <div class="order-section">
+            <div class="section-title">Пассажир:</div>
+            <div>
+                <label>ФИО пассажира:</label>
+                <input type="text" name="fio" value="{{ fio or '' }}" required>
+                <span class="error">{{ errors.fio }}</span>
+            </div>
+            
+            <div>
+                <label>Возраст:</label>
+                <input type="number" name="age" value="{{ age or '' }}" min="1" max="120" required>
+                <span class="error">{{ errors.age }}</span>
+            </div>
+            
+            <div>
+                <label>Полка:</label>
+                <select name="shelf" required>
+                    <option value="lower" {{ shelf == 'lower' and 'selected' }}>Нижняя</option>
+                    <option value="upper" {{ shelf == 'upper' and 'selected' }}>Верхняя</option>
+                    <option value="side_lower" {{ shelf == 'side_lower' and 'selected' }}>Нижняя боковая</option>
+                    <option value="side_upper" {{ shelf == 'side_upper' and 'selected' }}>Верхняя боковая</option>
+                </select>
+                <span class="error">{{ errors.shelf }}</span>
+            </div>
+        </div>
+
+        <div class="order-section">
+            <div class="section-title">Дополнительные услуги:</div>
+            <label class="form-label">
+                <input type="checkbox" name="linen" {{ linen and 'checked' }}> С бельём (+75 руб.)
+            </label>
+            <label class="form-label">
+                <input type="checkbox" name="baggage" {{ baggage and 'checked' }}> С багажом (+250 руб.)
+            </label>
+            <label class="form-label">
+                <input type="checkbox" name="insurance" {{ insurance and 'checked' }}> Со страховкой (+150 руб.)
+            </label>
+        </div>
+
+        <div class="order-section">
+            <div class="section-title">Маршрут:</div>
+            <div>
+                <label>Пункт выезда:</label>
+                <input type="text" name="departure" value="{{ departure or '' }}" required>
+                <span class="error">{{ errors.departure }}</span>
+            </div>
+            
+            <div>
+                <label>Пункт назначения:</label>
+                <input type="text" name="destination" value="{{ destination or '' }}" required>
+                <span class="error">{{ errors.destination }}</span>
+            </div>
+            
+            <div>
+                <label>Дата поездки:</label>
+                <input type="date" name="date" value="{{ date or '' }}" required>
+                <span class="error">{{ errors.date }}</span>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Оформить билет</button>
+        </div>
+    </form>
+{% endblock %}
