@@ -3,10 +3,12 @@ import datetime
 from lab1 import lab1
 from lab2 import lab2
 from lab3 import lab3
+from lab4 import lab4
 app = Flask(__name__)
 app.register_blueprint(lab1)
 app.register_blueprint(lab2)
 app.register_blueprint(lab3)
+app.register_blueprint(lab4)
 
 from flask import request
 import datetime
@@ -126,6 +128,7 @@ def index():
             <a href="/lab1">Лабраторная работа 1. Введение во Flask</a>
             <a href="/lab2/">Лабораторная работа 2. Шаблоны в Flask</a>
             <a href="/lab3/">Лабораторная работа 3. Формы, cookie</a>
+            <a href="/lab4/">Лабораторная работа 4. Формы (POST)</a>
         </ul>
 
         <footer>

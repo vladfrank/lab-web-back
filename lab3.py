@@ -71,15 +71,21 @@ def success():
     return render_template('lab3/success.html', price=price)
 
 
+# настройка стилей
 @lab3.route('/lab3/settings')
 def settings():
+    # параметры стилей из GET-запроса
     color = request.args.get('color')
     background = request.args.get('background')
     font_size = request.args.get('font_size')
     padding = request.args.get('padding')
 
+    # Если хотя бы один параметр передан сохраняем в куки
     if color or background or font_size or padding:
+        # ответ с редиректом
         resp = make_response(redirect('/lab3/settings'))
+        
+        # установка куки для каждого переданного параметра
         if color:
             resp.set_cookie('color', color)
         if background:
@@ -90,26 +96,38 @@ def settings():
             resp.set_cookie('padding', padding)
         return resp
 
+    # Если параметров не было, то берем из куки
     color = request.cookies.get('color')
     background = request.cookies.get('background')
     font_size = request.cookies.get('font_size')
     padding = request.cookies.get('padding')
+    
     return render_template('lab3/settings.html', color=color, background=background, font_size=font_size, padding=padding)
 
+
+# удаление сохраненных стилей
 @lab3.route('/lab3/del_style')
 def del_style():
     resp = make_response(redirect('/lab3/settings'))
+    
+    # Удаляем все куки со стилями
     resp.delete_cookie('color')
     resp.delete_cookie('background')
     resp.delete_cookie('font_size')
     resp.delete_cookie('padding')
+    
     return resp
+
 
 from datetime import datetime
 
+
+# страница оформления билета
 @lab3.route('/lab3/ticket')
 def ticket():
     errors = {}
+    
+    # Получаем параметры из GET-запроса
     fio = request.args.get('fio')
     age = request.args.get('age')
     shelf = request.args.get('shelf')
@@ -120,12 +138,12 @@ def ticket():
     date = request.args.get('date')
     insurance = request.args.get('insurance')
 
-    # Проверка полей
+    # Валидация
     if fio == '':
         errors['fio'] = 'Заполните поле ФИО'
     if age == '':
         errors['age'] = 'Заполните поле возраста'
-    elif age:
+    elif age:  # если возрат указан, проверим корректен ли он
         age_int = int(age)
         if age_int < 1 or age_int > 120:
             errors['age'] = 'Возраст должен быть от 1 до 120 лет'
@@ -136,44 +154,50 @@ def ticket():
     if date == '':
         errors['date'] = 'Выберите дату поездки'
 
+    # страница билета с переданными данными и ошибками
     return render_template('lab3/ticket.html', 
                          fio=fio, age=age, shelf=shelf, linen=linen, 
                          baggage=baggage, departure=departure, 
                          destination=destination, date=date, insurance=insurance,
                          errors=errors)
 
+
+# страница с результатом оформления билета
 @lab3.route('/lab3/ticket_result')
 def ticket_result():
     fio = request.args.get('fio')
-    age = int(request.args.get('age'))
+    age = int(request.args.get('age'))  # возраст в число
     shelf = request.args.get('shelf')
-    linen = request.args.get('linen') == 'on'
+    linen = request.args.get('linen') == 'on'  # Чекбоксы преобразуем в тру\фолс
     baggage = request.args.get('baggage') == 'on'
     departure = request.args.get('departure')
     destination = request.args.get('destination')
     date = request.args.get('date')
     insurance = request.args.get('insurance') == 'on'
 
-    # Расчет стоимости
     if age < 18:
-        base_price = 700  # детский
+        base_price = 700  # детский билет
     else:
-        base_price = 1000  # взрослый
+        base_price = 1000  # взрослый билет
 
+    # Надбавка за тип полки
     shelf_surcharge = 0
-    if shelf in ['lower', 'side_lower']:
+    if shelf in ['lower', 'side_lower']: 
         shelf_surcharge = 100
 
+    # Расчет общей стоимости с учетом всех опций
     total_price = base_price + shelf_surcharge
-    if linen:
+    if linen:       # Постельное
         total_price += 75
-    if baggage:
+    if baggage:     # Багаж
         total_price += 250
-    if insurance:
+    if insurance:   # Страховка
         total_price += 150
 
+    # для отображения времени оформления
     timestamp = datetime.now().strftime("%d.%m.%Y %H:%M")
 
+    # Отображаем страницу с результатом и всеми расчетами
     return render_template('lab3/ticket_result.html',
                          fio=fio, age=age, shelf=shelf, linen=linen,
                          baggage=baggage, departure=departure,
@@ -181,10 +205,8 @@ def ticket_result():
                          base_price=base_price, shelf_surcharge=shelf_surcharge,
                          total_price=total_price, timestamp=timestamp)
 
-@lab3.route('/lab3/products')
-def products():
-    # Список пива
-    all_products = [
+# Список пива
+all_products = [
         {'name': 'Балтика 0', 'price': 85, 'brand': 'Балтика', 'type': 'Безалкогольное', 'alcohol': 0.5, 'volume': 0.5},
         {'name': 'Балтика 6', 'price': 95, 'brand': 'Балтика', 'type': 'Портер', 'alcohol': 7.0, 'volume': 0.5},
         {'name': 'Балтика 7', 'price': 90, 'brand': 'Балтика', 'type': 'Экспортное', 'alcohol': 5.4, 'volume': 0.5},
@@ -210,24 +232,28 @@ def products():
         {'name': 'Велкопоповицкий Козел', 'price': 125, 'brand': 'Velkopopovicky', 'type': 'Лагер', 'alcohol': 4.6, 'volume': 0.5},
         {'name': 'Эфес', 'price': 95, 'brand': 'EFES', 'type': 'Пилснер', 'alcohol': 5.0, 'volume': 0.5},
         {'name': 'Карлсберг', 'price': 110, 'brand': 'Carlsberg', 'type': 'Лагер', 'alcohol': 5.0, 'volume': 0.5}
-    ]
+]
 
     # Находим мин и макс цены для плейсхолдеров
-    min_product_price = min(product['price'] for product in all_products)
-    max_product_price = max(product['price'] for product in all_products)
+min_product_price = min(product['price'] for product in all_products)
+max_product_price = max(product['price'] for product in all_products)
+
+
+@lab3.route('/lab3/products')
+def products():
 
     action = request.args.get('action')
     min_price = request.args.get('min_price')
     max_price = request.args.get('max_price')
 
-    # Обработка сброса
+    # сброс
     if action == 'reset':
         resp = make_response(redirect('/lab3/products'))
         resp.delete_cookie('min_price')
         resp.delete_cookie('max_price')
         return resp
 
-    # Получаем значения из cookies если они есть
+    # Получаем значения из куки если они есть
     if not min_price:
         min_price = request.cookies.get('min_price')
     if not max_price:

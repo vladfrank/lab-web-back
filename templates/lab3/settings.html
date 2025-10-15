@@ -20,12 +20,12 @@
             <input type="number" id="font_size" name="font_size" value="{{ font_size or '' }}" min="10" max="30">
         </div>
 
-        <div>
+        <div> 
             <label for="padding">Выберите отступы:</label>
             <select id="padding" name="padding">
                 <option value="10px" {% if padding == '10px' or not padding %}selected{% endif %}>Маленькие</option>
                 <option value="20px" {% if padding == '20px' %}selected{% endif %}>Средние</option>
-                <option value="30px" {% if padding == '30px' %}selected{% endif %}>Большие</option>
+                <option value="30px" {% if padding == '50px' %}selected{% endif %}>Большие</option>
             </select>
         </div>
 
