@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block lab %}Список пользователей{% endblock %}
+
+{% block main %}
+    <h1>Список пользователей</h1>
+    
+    <div class="users-list">
+        {% for user in users %}
+            <div class="user-card {% if user.login == current_user %}current-user{% endif %}">
+                <div class="user-info">
+                    <strong>{{ user.name }}</strong> ({{ user.login }})
+                    {% if user.login == current_user %}
+                        <span class="you-badge">Вы</span>
+                    {% endif %}
+                </div>
+                
+                {% if user.login == current_user %}
+                <div class="user-actions">
+                    <form method="post" action="/lab4/edit-user" style="display: inline;">
+                        <input type="hidden" name="login" value="{{ user.login }}">
+                        <button type="submit">Редактировать</button>
+                    </form>
+                    <form method="post" action="/lab4/delete-user" style="display: inline;" onsubmit="return confirm('Вы уверены, что хотите удалить свой аккаунт?')">
+                        <input type="hidden" name="login" value="{{ user.login }}">
+                        <button type="submit" class="danger">Удалить аккаунт</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    
+    <div class="actions">
+        <a href="/lab4/register">Добавить пользователя</a>
+        <a href="/lab4/">На главную</a>
+    </div>
+{% endblock %}

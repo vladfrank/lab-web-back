@@ -104,3 +104,114 @@ main {
     font-weight: bold;
     margin-top: 10px;
 }
+
+/* Стили для управления пользователями */
+.users-list {
+    margin: 20px 0;
+}
+
+.user-card {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-card.current-user {
+    background: #e3f2fd;
+    border-color: #2196f3;
+}
+
+.user-info {
+    flex-grow: 1;
+}
+
+.you-badge {
+    background: #2196f3;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    margin-left: 10px;
+}
+
+.user-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.user-actions form {
+    margin: 0;
+}
+
+.user-actions button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.user-actions button.danger {
+    background: #dc3545;
+    color: white;
+}
+
+.user-actions button:hover {
+    opacity: 0.8;
+}
+
+.actions {
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Стили для форм */
+form div {
+    margin: 15px 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+select {
+    width: 100%;
+    max-width: 300px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+button[type="submit"],
+button[type="reset"] {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button[type="submit"] {
+    background: #007bff;
+    color: white;
+}
+
+button[type="reset"] {
+    background: #6c757d;
+    color: white;
+}
+
+button:hover {
+    opacity: 0.8;
+}

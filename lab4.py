@@ -1,6 +1,15 @@
 from flask import Blueprint, render_template, request, make_response, redirect, session
 lab4 = Blueprint('lab4', __name__)
 
+# Глобальный список пользователей (наш аналог БД)
+users = [
+    {'login': 'vlad', 'password': '123', 'name': 'Владислав Франк', 'gender': 'male'},
+    {'login': 'bob', 'password': '555', 'name': 'Губка Боб', 'gender': 'male'},
+    {'login': 'vika', 'password': 'lox', 'name': 'Виктория Мальборо', 'gender': 'female'},
+    {'login': 'sanya', 'password': 'moshkovo', 'name': 'Александр Мошковский', 'gender': 'male'},
+    {'login': 'egor_ivanovich', 'password': 'nstu', 'name': 'Егор Иванович', 'gender': 'male'},
+]
+
 
 @lab4.route('/lab4/')
 def lab():
@@ -128,15 +137,6 @@ def tree():
             tree_count += 1
 
     return redirect('/lab4/tree')
-
-
-users = [
-    {'login': 'vlad', 'password': '123', 'name': 'Владислав Франк', 'gender': 'male'},
-    {'login': 'bob', 'password': '555', 'name': 'Губка Боб', 'gender': 'male'},
-    {'login': 'vika', 'password': 'lox', 'name': 'Виктория Мальборо', 'gender': 'female'},
-    {'login': 'sanya', 'password': 'moshkovo', 'name': 'Александр Мошковский', 'gender': 'male'},
-    {'login': 'egor_ivanovich', 'password': 'nstu', 'name': 'Егор Иванович', 'gender': 'male'},
-]
 
 
 @lab4.route('/lab4/login', methods = ['GET', 'POST'])
@@ -280,3 +280,149 @@ def beer_order_process():
                          discount_amount=discount_amount,
                          beer_type=beer_type,
                          volume=volume)
+
+
+@lab4.route('/lab4/register')
+def register():
+    return render_template('/lab4/register.html')
+
+
+@lab4.route('/lab4/register-process', methods = ['POST'])
+def register_process():
+    login = request.form.get('login')
+    name = request.form.get('name')
+    password = request.form.get('password')
+    confirm_password = request.form.get('confirm_password')
+    gender = request.form.get('gender')
+    
+    # Проверка на пустые поля
+    if not login or not name or not password or not confirm_password:
+        return render_template('lab4/register.html', error='Все поля должны быть заполнены', 
+                             login_value=login, name_value=name, gender=gender)
+    
+    # Проверка совпадения паролей
+    if password != confirm_password:
+        return render_template('lab4/register.html', error='Пароли не совпадают', 
+                             login_value=login, name_value=name, gender=gender)
+    
+    # Проверка на существующий логин
+    for user in users:
+        if user['login'] == login:
+            return render_template('lab4/register.html', error='Пользователь с таким логином уже существует', 
+                                 login_value=login, name_value=name, gender=gender)
+    
+    # Добавление нового пользователя
+    new_user = {
+        'login': login,
+        'name': name,
+        'password': password,
+        'gender': gender
+    }
+    users.append(new_user)
+    
+    # Автоматический вход после регистрации
+    session['login'] = login
+    session['name'] = name
+    
+    return redirect('/lab4/login')
+
+
+@lab4.route('/lab4/users')
+def users_list():
+    # Проверка авторизации
+    if 'login' not in session:
+        return redirect('/lab4/login')
+    
+    current_user_login = session['login']
+    return render_template('/lab4/users.html', users=users, current_user=current_user_login)
+
+
+@lab4.route('/lab4/edit-user', methods = ['POST'])
+def edit_user():
+    # Проверка авторизации
+    if 'login' not in session:
+        return redirect('/lab4/login')
+    
+    login = request.form.get('login')
+    
+    # Проверка, что пользователь редактирует только свой аккаунт
+    if login != session['login']:
+        return redirect('/lab4/users')
+    
+    user = next((u for u in users if u['login'] == login), None)
+    if user:
+        # Создаем копию без пароля для безопасности
+        user_safe = user.copy()
+        user_safe.pop('password', None)
+        return render_template('/lab4/edit-user.html', user=user_safe)
+    
+    return redirect('/lab4/users')
+
+
+@lab4.route('/lab4/update-user', methods = ['POST'])
+def update_user():
+    # Проверка авторизации
+    if 'login' not in session:
+        return redirect('/lab4/login')
+    
+    old_login = request.form.get('old_login')
+    new_login = request.form.get('login')
+    name = request.form.get('name')
+    gender = request.form.get('gender')
+    password = request.form.get('password')
+    confirm_password = request.form.get('confirm_password')
+    
+    # Проверка, что пользователь редактирует только свой аккаунт
+    if old_login != session['login']:
+        return redirect('/lab4/users')
+    
+    # Проверка на существующий логин (если логин меняется)
+    if new_login != old_login:
+        for user in users:
+            if user['login'] == new_login:
+                user_safe = {'login': old_login, 'name': name, 'gender': gender}
+                return render_template('/lab4/edit-user.html', user=user_safe, error='Пользователь с таким логином уже существует')
+    
+    # Находим пользователя
+    user_index = next((i for i, u in enumerate(users) if u['login'] == old_login), None)
+    if user_index is not None:
+        # Обновляем данные
+        users[user_index]['login'] = new_login
+        users[user_index]['name'] = name
+        users[user_index]['gender'] = gender
+        
+        # Обновляем пароль только если он указан
+        if password and confirm_password:
+            if password != confirm_password:
+                user_safe = {'login': new_login, 'name': name, 'gender': gender}
+                return render_template('/lab4/edit-user.html', user=user_safe, error='Пароли не совпадают')
+            users[user_index]['password'] = password
+        
+        # Обновляем сессию
+        session['login'] = new_login
+        session['name'] = name
+    
+    return redirect('/lab4/users')
+
+
+@lab4.route('/lab4/delete-user', methods = ['POST'])
+def delete_user():
+    # Проверка авторизации
+    if 'login' not in session:
+        return redirect('/lab4/login')
+    
+    login = request.form.get('login')
+    
+    # Проверка, что пользователь удаляет только свой аккаунт
+    if login != session['login']:
+        return redirect('/lab4/users')
+    
+    # Удаляем пользователя
+    global users
+    users = [user for user in users if user['login'] != login]
+    
+    # Выход из системы
+    session.pop('login', None)
+    session.pop('name', None)
+    
+    return redirect('/lab4/login')
