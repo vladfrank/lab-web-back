@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block lab %}Заказ пива{% endblock %}
+
+{% block main %}
+    <h1>Заказ пива</h1>
+    
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% elif message %}
+        <div class="order-result">
+            <p>{{ message }}</p>
+            {% if discount_applied %}
+                <p class="discount-info">Применена скидка 10% за большой заказ. Скидка: {{ discount_amount }} руб.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+    
+    <h2>Оформите заказ</h2>
+    <form method="post" action="/lab4/beer-order-process">
+        <div>
+            <label for="beer_type">Сорт пива:</label>
+            <select id="beer_type" name="beer_type">
+                <option value="lager" {% if beer_type == 'lager' %}selected{% endif %}>Lager - 150 руб/л</option>
+                <option value="ale" {% if beer_type == 'ale' %}selected{% endif %}>Ale - 180 руб/л</option>
+                <option value="stout" {% if beer_type == 'stout' %}selected{% endif %}>Stout - 200 руб/л</option>
+                <option value="wheat" {% if beer_type == 'wheat' %}selected{% endif %}>Пшеничное - 170 руб/л</option>
+            </select>
+        </div>
+        <div>
+            <label for="volume">Объем (литры):</label>
+            <input type="number" id="volume" name="volume" step="0.1" min="0.5" value="{{ volume or '' }}">
+        </div>
+        <div>
+            <button type="submit" class="btn btn-primary">Оформить заказ</button>
+        </div>
+    </form>
+{% endblock %}

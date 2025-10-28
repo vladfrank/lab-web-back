@@ -88,3 +88,19 @@ main {
     margin-top: 4px;
     display: block;
 }
+
+/* Стили для заказа пива */
+.order-result {
+    text-align: center;
+    margin: 20px 0;
+    padding: 15px;
+    background: #f0f8ff;
+    border-radius: 8px;
+    border: 1px solid #3498db;
+}
+
+.discount-info {
+    color: #27ae60;
+    font-weight: bold;
+    margin-top: 10px;
+}

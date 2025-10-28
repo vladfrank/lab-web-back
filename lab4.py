@@ -195,15 +195,15 @@ def fridge_set():
     
     temp = int(temperature)
     
-    # Проверка на слишком низкую температуру
+    # Проверка на низкую температуру
     if temp < -12:
         return render_template('lab4/fridge.html', error='Не удалось установить температуру - слишком низкое значение', temp_value=temperature)
     
-    # Проверка на слишком высокую температуру
+    # Проверка на высокую температуру
     if temp > -1:
         return render_template('lab4/fridge.html', error='Не удалось установить температуру - слишком высокое значение', temp_value=temperature)
     
-    # Определение количества снежинок в зависимости от диапазона температуры
+    # Определение количества снежинок в зависимости от температуры
     if -12 <= temp <= -9:
         snowflakes = 3
     elif -8 <= temp <= -5:
@@ -215,3 +215,68 @@ def fridge_set():
     
     message = f'Установлена температура: {temp}°С'
     return render_template('lab4/fridge.html', message=message, snowflakes=snowflakes)
+
+
+@lab4.route('/lab4/beer-order')
+def beer_order():
+    return render_template('/lab4/beer-order.html')
+
+
+@lab4.route('/lab4/beer-order-process', methods = ['POST'])
+def beer_order_process():
+    beer_type = request.form.get('beer_type')
+    volume = request.form.get('volume')
+    
+    # Проверка на пустое значение объема
+    if not volume:
+        return render_template('lab4/beer-order.html', error='Не указан объем заказа', beer_type=beer_type)
+    
+    volume_float = float(volume)
+    
+    # Проверка на отрицательный или нулевой объем
+    if volume_float <= 0:
+        return render_template('lab4/beer-order.html', error='Объем должен быть больше 0', beer_type=beer_type, volume=volume)
+    
+    # Проверка на слишком большой объем
+    if volume_float > 50:
+        return render_template('lab4/beer-order.html', error='Такого объема сейчас нет в наличии', beer_type=beer_type, volume=volume)
+    
+    # Цены за литр
+    prices = {
+        'lager': 150,
+        'ale': 180,
+        'stout': 200,
+        'wheat': 170
+    }
+    
+    # Названия сортов пива
+    beer_names = {
+        'lager': 'Lager',
+        'ale': 'Ale',
+        'stout': 'Stout',
+        'wheat': 'Пшеничное'
+    }
+    
+    price_per_liter = prices[beer_type]
+    beer_name = beer_names[beer_type]
+    
+    # Расчет стоимости
+    total_cost = volume_float * price_per_liter
+    
+    # Применение скидки 10% за заказ более 10 литров
+    discount_applied = False
+    discount_amount = 0
+    
+    if volume_float > 10:
+        discount_amount = total_cost * 0.1
+        total_cost -= discount_amount
+        discount_applied = True
+    
+    message = f'Заказ успешно сформирован. Вы заказали {beer_name}. Объем: {volume_float} л. Сумма к оплате: {total_cost:.0f} руб.'
+    
+    return render_template('lab4/beer-order.html', 
+                         message=message, 
+                         discount_applied=discount_applied,
+                         discount_amount=discount_amount,
+                         beer_type=beer_type,
+                         volume=volume)
