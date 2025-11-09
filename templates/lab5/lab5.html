@@ -6,7 +6,7 @@
     <h1>Лабораторная работа 5</h1>
     
     <div>
-        <p>Пользователь: anonymous</p>
+        <p>Пользователь: {% if login %} {{ login }} {% else %} Anonymous {% endif %}</p>
     </div>
     
     <div>
