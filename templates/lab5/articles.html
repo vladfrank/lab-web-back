@@ -1,13 +1,42 @@
 {% extends "base.html" %}
 
-{% block lab %}Лабораторная работа 5{% endblock %}
+{% block lab %}Все статьи{% endblock %}
 
 {% block main %}
-    <h1>Статьи</h1>
-    
-    {% for article in articles %}
-        <h2>{{ article['title'] }}</h2>
-        <blockquote>{{ article['article_text'] }}</blockquote>
-    {% endfor %}
-
+    <div>
+        <h1 style="text-align: center;">Все статьи</h1>
+        
+        <div style="text-align: center; margin: 20px 0;">
+            <a href="/lab5/create" class="btn-primary">Создать новую статью</a>
+            <a href="/lab5" class="btn-secondary">На главную</a>
+        </div>
+        
+        {% if articles %}
+            {% for article in articles %}
+                <div class="article-card">
+                    <h2>{{ article['title'] }}</h2>
+                    <p><strong>Автор:</strong> {{ article['author'] }}</p>
+                    <div class="article-content">
+                        <p>{{ article['article_text'] }}</p>
+                    </div>
+                    {% if article['author'] == login %}
+                    <div class="article-actions">
+                        <a href="/lab5/edit/{{ article['id'] }}" class="btn-edit">Редактировать</a>
+                        <a href="/lab5/delete/{{ article['id'] }}" 
+                           class="btn-delete" 
+                           onclick="return confirm('Удалить статью?')">Удалить</a>
+                    </div>
+                    {% endif %}
+                    <div class="article-footer">
+                        <small>ID статьи: {{ article['id'] }}</small>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div style="text-align: center; padding: 40px; background: white; border: 2px solid #000000; border-radius: 10px;">
+                <h2>Пока нет ни одной статьи</h2>
+                <a href="/lab5/create" class="btn-primary">Создать первую статью</a>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}

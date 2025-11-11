@@ -3,7 +3,9 @@
 {% block lab %}Лабораторная работа 5{% endblock %}
 
 {% block main %}
-    <h1>Вход выполнен!</h1>
-    <p>Вы успешно вошли под логином: <strong>{{ login }}</strong></p>
-    <a href="/lab5">Перейти к сайту</a>
+    <div style="text-align: center; padding: 40px; background: white; border: 2px solid #000000; border-radius: 10px;">
+        <h1>Вход выполнен!</h1>
+        <p>Вы успешно вошли под логином: <strong>{{ login }}</strong></p>
+        <a href="/lab5" class="btn-primary">Перейти к сайту</a>
+    </div>
 {% endblock %}

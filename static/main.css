@@ -215,3 +215,89 @@ button[type="reset"] {
 button:hover {
     opacity: 0.8;
 }
+
+.user-info {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 20px 0;
+    border: 2px solid #000000;
+    text-align: center;
+}
+
+.nav-button {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: 2px solid #000000;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.nav-button.logout {
+    background-color: #e74c3c;
+}
+
+.btn-primary,
+.btn-secondary {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px 20px;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    text-decoration: none;
+    color: white;
+}
+
+.btn-primary {
+    background-color: #27ae60;
+}
+
+.btn-secondary {
+    background-color: #95a5a6;
+}
+
+.btn-edit,
+.btn-delete {
+    padding: 8px 16px;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    text-decoration: none;
+    margin-right: 10px;
+    color: white;
+}
+
+.btn-edit {
+    background-color: #f39c12;
+}
+
+.btn-delete {
+    background-color: #e74c3c;
+}
+
+.article-card {
+    background: white;
+    border: 2px solid #000000;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.form-group textarea {
+    min-height: 200px;
+}
