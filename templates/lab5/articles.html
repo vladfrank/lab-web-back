@@ -7,35 +7,53 @@
         <h1 style="text-align: center;">Все статьи</h1>
         
         <div style="text-align: center; margin: 20px 0;">
-            <a href="/lab5/create" class="btn-primary">Создать новую статью</a>
+            {% if login %}
+                <a href="/lab5/create" class="btn-primary">Создать новую статью</a>
+            {% endif %}
             <a href="/lab5" class="btn-secondary">На главную</a>
         </div>
         
         {% if articles %}
             {% for article in articles %}
                 <div class="article-card">
+                    {% if article.is_favorite %}
+                    <div style="background: gold; padding: 5px; border-radius: 5px; margin-bottom: 10px; text-align: center;">
+                        В избранном
+                    </div>
+                    {% endif %}
                     <h2>{{ article['title'] }}</h2>
-                    <p><strong>Автор:</strong> {{ article['author'] }}</p>
+                    <p><strong>Автор:</strong> {{ article['author'] }}{% if article.full_name %} ({{ article.full_name }}){% endif %}</p>
+                    {% if not article.is_public %}
+                    <p style="color: #e74c3c;">Приватная статья</p>
+                    {% endif %}
                     <div class="article-content">
                         <p>{{ article['article_text'] }}</p>
                     </div>
-                    {% if article['author'] == login %}
                     <div class="article-actions">
-                        <a href="/lab5/edit/{{ article['id'] }}" class="btn-edit">Редактировать</a>
-                        <a href="/lab5/delete/{{ article['id'] }}" 
-                           class="btn-delete" 
-                           onclick="return confirm('Удалить статью?')">Удалить</a>
-                    </div>
-                    {% endif %}
-                    <div class="article-footer">
-                        <small>ID статьи: {{ article['id'] }}</small>
+                        {% if login %}
+                            {% if article.is_favorite %}
+                                <a href="/lab5/unfavorite/{{ article['id'] }}" class="btn-edit">Убрать из избранного</a>
+                            {% else %}
+                                <a href="/lab5/favorite/{{ article['id'] }}" class="btn-primary">Добавить в избранное</a>
+                            {% endif %}
+                        {% endif %}
+                        {% if article['author'] == login %}
+                            <a href="/lab5/edit/{{ article['id'] }}" class="btn-edit">Редактировать</a>
+                            <a href="/lab5/delete/{{ article['id'] }}" 
+                               class="btn-delete" 
+                               onclick="return confirm('Удалить статью?')">Удалить</a>
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}
         {% else %}
             <div style="text-align: center; padding: 40px; background: white; border: 2px solid #000000; border-radius: 10px;">
                 <h2>Пока нет ни одной статьи</h2>
-                <a href="/lab5/create" class="btn-primary">Создать первую статью</a>
+                {% if login %}
+                    <a href="/lab5/create" class="btn-primary">Создать первую статью</a>
+                {% else %}
+                    <a href="/lab5/login" class="btn-primary">Войдите, чтобы создать статью</a>
+                {% endif %}
             </div>
         {% endif %}
     </div>

@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
-{% block lab %}Регистрация{% endblock %}
+{% block lab %}Профиль{% endblock %}
 
 {% block main %}
     <div style="max-width: 400px; margin: 0 auto;">
-        <h1 style="text-align: center;">Регистрация</h1>
+        <h1 style="text-align: center;">Профиль пользователя</h1>
         
         {% if error %}
             <div style="background: #ffeaa7; color: #d63031; padding: 15px; border: 2px solid #d63031; border-radius: 5px; margin-bottom: 20px; text-align: center;">
@@ -15,21 +15,17 @@
         <form method="post">
             <div class="form-group">
                 <label>Логин:</label>
-                <input type="text" name="login" required>
-            </div>
-
-            <div class="form-group">
-                <label>Пароль:</label>
-                <input type="password" name="password" required>
+                <input type="text" value="{{ login }}" disabled style="background: #f0f0f0;">
             </div>
 
             <div class="form-group">
                 <label>Полное имя:</label>
-                <input type="text" name="full_name">
+                <input type="text" name="full_name" value="{{ user['full_name'] or '' }}">
             </div>
 
             <div style="text-align: center; margin-top: 30px;">
-                <button type="submit" class="btn-primary">Зарегистрироваться</button>
+                <button type="submit" class="btn-primary">Сохранить имя</button>
+                <a href="/lab5/change_password" class="btn-edit">Сменить пароль</a>
                 <a href="/lab5" class="btn-secondary">На главную</a>
             </div>
         </form>

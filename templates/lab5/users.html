@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block lab %}Пользователи{% endblock %}
+
+{% block main %}
+    <div>
+        <h1 style="text-align: center;">Список пользователей</h1>
+        
+        <div style="text-align: center; margin: 20px 0;">
+            <a href="/lab5" class="btn-secondary">На главную</a>
+        </div>
+        
+        {% if users %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                {% for user in users %}
+                    <div class="article-card">
+                        <h3>{{ user['login'] }}</h3>
+                        <p><strong>Имя:</strong> {{ user['full_name'] or 'Не указано' }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 40px; background: white; border: 2px solid #000000; border-radius: 10px;">
+                <h2>Нет зарегистрированных пользователей</h2>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -3,7 +3,7 @@
 {% block lab %}Лабораторная работа 5{% endblock %}
 
 {% block main %}
-    <div style="text-align: center;">
+    <div class="lab5-container">
         <h1>База знаний</h1>
         
         <div class="user-info">
@@ -16,14 +16,17 @@
             </p>
         </div>
         
-        <div>
+        <div class="navigation">
             {% if login %}
-                <a href="/lab5/list" class="nav-button">Мои статьи</a>
+                <a href="/lab5/list" class="nav-button">Все статьи</a>
                 <a href="/lab5/create" class="nav-button">Создать статью</a>
+                <a href="/lab5/users" class="nav-button">Все пользователи</a>
+                <a href="/lab5/profile" class="nav-button">Профиль</a>
                 <a href="/lab5/logout" class="nav-button logout">Выйти</a>
             {% else %}
                 <a href="/lab5/login" class="nav-button">Вход</a>
                 <a href="/lab5/register" class="nav-button">Регистрация</a>
+                <a href="/lab5/list" class="nav-button">Публичные статьи</a>
             {% endif %}
         </div>
     </div>
