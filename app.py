@@ -5,6 +5,7 @@ from lab2 import lab2
 from lab3 import lab3
 from lab4 import lab4
 from lab5 import lab5
+from lab6 import lab6
 app = Flask(__name__)
 import os
 
@@ -16,6 +17,7 @@ app.register_blueprint(lab2)
 app.register_blueprint(lab3)
 app.register_blueprint(lab4)
 app.register_blueprint(lab5)
+app.register_blueprint(lab6)
 
 from flask import request
 import datetime
@@ -137,6 +139,7 @@ def index():
             <a href="/lab3/">Лабораторная работа 3. Формы, cookie</a>
             <a href="/lab4/">Лабораторная работа 4. Формы (POST)</a>
             <a href="/lab5/">Лабораторная работа 5. Flask и БД</a>
+            <a href="/lab6/">Лабораторная работа 6. API JSON-RPC</a>
         </ul>
 
         <footer>
