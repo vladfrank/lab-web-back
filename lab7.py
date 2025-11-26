@@ -37,11 +37,21 @@ beers = [
 ]
 
 @lab7.route('/lab7/rest-api/beers/', methods=['GET'])
-def get_films():
+def get_beers():
     return beers
 
+
 @lab7.route('/lab7/rest-api/beers/<int:id>', methods=['GET'])
-def get_film(id):
+def get_beer(id):
     if id < 0 or id >= len(beers):
         abort(404)
     return beers[id]
+
+
+@lab7.route('/lab7/rest-api/beers/<int:id>', methods=['DELETE'])
+def del_beer(id):
+    if id < 0 or id >= len(beers):
+        abort(404)
+    del beers[id]
+    return '', 204
+
