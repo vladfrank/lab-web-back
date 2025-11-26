@@ -63,3 +63,12 @@ def put_beer(id):
     beer = request.get_json()
     beers[id] = beer
     return beers[id]
+
+
+@lab7.route('/lab7/rest-api/beers/', methods=['POST'])
+def add_beer():
+    beer = request.get_json()
+    beers.append(beer)
+    return jsonify(len(beers) - 1), 201
+
+    
