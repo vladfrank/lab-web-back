@@ -182,8 +182,10 @@ function getOfficeList() {
                 buttonGroup.appendChild(cancelButton);
                 
                 // Добавляем стоимость к общей сумме
-                totalCost += office.price;
-                userBookedOffices.push(office);
+                if (office.tenant == login) {
+                    totalCost += office.price;
+                    userBookedOffices.push(office);
+                }
             }
 
             li.appendChild(buttonGroup);

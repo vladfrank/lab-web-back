@@ -34,6 +34,7 @@ def db_close(conn, cur):
     cur.close()
     conn.close()    
 
+#регистрация
 @lab5.route('/lab5/register', methods = ['GET', 'POST'])
 def register():
     if request.method == 'GET':
@@ -68,6 +69,7 @@ def register():
     db_close(conn, cur)
     return render_template('lab5/success.html', login=login)
 
+#логирование
 @lab5.route('/lab5/login', methods = ['GET', 'POST'])
 def login():
     if request.method == 'GET':
@@ -104,12 +106,14 @@ def login():
     db_close(conn, cur)
     return render_template('lab5/success_login.html', login=login)
 
+#разлог
 @lab5.route('/lab5/logout')
 def logout():
     session.pop('login', None)
     session.pop('user_id', None)
     return redirect('/lab5')
 
+#создание статьи
 @lab5.route('/lab5/create', methods = ['GET', 'POST'])
 def create():
     login = session.get('login')
@@ -122,6 +126,7 @@ def create():
     title = request.form.get('title')
     article_text = request.form.get('article_text')
     is_public = request.form.get('is_public') == 'on'
+    is_favorite = request.form.get('is_favorite') == 'on'
 
     if not title or not article_text:
         return render_template('lab5/create_article.html', 
@@ -143,18 +148,19 @@ def create():
 
     if current_app.config['DB_TYPE'] == 'postgres':
         cur.execute("""
-            INSERT INTO articles(user_id, title, article_text, is_public) 
-            VALUES (%s, %s, %s, %s);
-        """, (user_id, title, article_text, is_public))
+            INSERT INTO articles(user_id, title, article_text, is_public, is_favorite) 
+            VALUES (%s, %s, %s, %s, %s);
+        """, (user_id, title, article_text, is_public, is_favorite))
     else:
         cur.execute("""
-            INSERT INTO articles(user_id, title, article_text, is_public) 
-            VALUES (?, ?, ?, ?);
-        """, (user_id, title, article_text, is_public))
+            INSERT INTO articles(user_id, title, article_text, is_public, is_favorite) 
+            VALUES (?, ?, ?, ?, ?);
+        """, (user_id, title, article_text, is_public, is_favorite))
     
     db_close(conn, cur)
     return redirect('/lab5/list')
 
+#cсписок статей
 @lab5.route('/lab5/list')
 def list_articles():
     login = session.get('login')
@@ -233,14 +239,18 @@ def list_articles():
     db_close(conn, cur)
     return render_template('/lab5/articles.html', articles=articles, login=login)
 
+#изменение статьи
 @lab5.route('/lab5/edit/<int:article_id>', methods=['GET', 'POST'])
 def edit_article(article_id):
+    # авторизован ли пользователь
     login = session.get('login')
     if not login:
         return redirect('/lab5/login')
 
+    # Подключаемся к бд
     conn, cur = db_connect()
 
+    # получаем данные статьи вместе с информацией об авторе
     if current_app.config['DB_TYPE'] == 'postgres':
         cur.execute("""
             SELECT articles.*, users.login as author 
@@ -258,25 +268,33 @@ def edit_article(article_id):
     
     article = cur.fetchone()
     
+    # существует ли статья и принадлежит ли она текущему пользователю
     if not article or article['author'] != login:
         db_close(conn, cur)
         return redirect('/lab5/list')
 
+    # отображение формы редактирования
     if request.method == 'GET':
         db_close(conn, cur)
         return render_template('lab5/edit_article.html', article=article)
 
+    # сохранение изменений
+    # Получаем данные из формы
     title = request.form.get('title')
     article_text = request.form.get('article_text')
-    is_public = request.form.get('is_public') == 'on'
+    is_public = request.form.get('is_public') == 'on'  # чекбокс в boolean
 
+    # Валидация (название и текст не пустые)
     if not title or not article_text:
         db_close(conn, cur)
         return render_template('lab5/edit_article.html', 
                               article=article, 
                               error='Заполните название и текст статьи')
 
+    # подключаемся к базе данных для обновления
     conn, cur = db_connect()
+    
+    # обновляем статью в базе данных
     if current_app.config['DB_TYPE'] == 'postgres':
         cur.execute("""
             UPDATE articles 
@@ -291,17 +309,23 @@ def edit_article(article_id):
         """, (title, article_text, is_public, article_id, login))
     
     db_close(conn, cur)
+    
     return redirect('/lab5/list')
+
 
 @lab5.route('/lab5/delete/<int:article_id>')
 def delete_article(article_id):
+    # авторизован ли пользователь
     login = session.get('login')
     if not login:
         return redirect('/lab5/login')
 
+    # Подключаемся к бд
     conn, cur = db_connect()
 
+    # удаление статьи из базы данных
     if current_app.config['DB_TYPE'] == 'postgres':
+        # удаляем статью только если она принадлежит текущему пользователю
         cur.execute("""
             DELETE FROM articles 
             WHERE id=%s AND user_id=(SELECT id FROM users WHERE login=%s);
@@ -313,42 +337,48 @@ def delete_article(article_id):
         """, (article_id, login))
     
     db_close(conn, cur)
+    
     return redirect('/lab5/list')
 
 # функции для избранных статей
 
 @lab5.route('/lab5/favorite/<int:article_id>')
 def add_to_favorite(article_id):
+    # авторизован ли пользователь
     login = session.get('login')
     if not login:
         return redirect('/lab5/login')
 
     conn, cur = db_connect()
 
-    # Проверяем, существует ли статья
+    # существует ли статья с указанным ID
     if current_app.config['DB_TYPE'] == 'postgres':
         cur.execute("SELECT id FROM articles WHERE id=%s;", (article_id,))
     else:
         cur.execute("SELECT id FROM articles WHERE id=?;", (article_id,))
     
+    # Если статья не найдена, перенаправляем на список статей
     if not cur.fetchone():
         db_close(conn, cur)
         return redirect('/lab5/list')
 
-    # Добавляем в избранное
+    # Добавляем статью в избранное для текущего пользователя
     if current_app.config['DB_TYPE'] == 'postgres':
+        # в постгрес используем ON CONFLICT для избежания дубликатов
         cur.execute("""
             INSERT INTO favorite_articles (user_id, article_id) 
             SELECT id, %s FROM users WHERE login=%s
             ON CONFLICT (user_id, article_id) DO NOTHING;
         """, (article_id, login))
     else:
+        # в лайте используем INSERT OR IGNORE для избежания дубликатов
         cur.execute("""
             INSERT OR IGNORE INTO favorite_articles (user_id, article_id) 
             SELECT id, ? FROM users WHERE login=?;
         """, (article_id, login))
     
     db_close(conn, cur)
+    
     return redirect('/lab5/list')
 
 @lab5.route('/lab5/unfavorite/<int:article_id>')
@@ -359,6 +389,7 @@ def remove_from_favorite(article_id):
 
     conn, cur = db_connect()
 
+    # Удаляем статью из избранного для текущего пользователя
     if current_app.config['DB_TYPE'] == 'postgres':
         cur.execute("""
             DELETE FROM favorite_articles 
@@ -371,18 +402,21 @@ def remove_from_favorite(article_id):
         """, (article_id, login))
     
     db_close(conn, cur)
+    
     return redirect('/lab5/list')
 
-# Функции для пользователей и профиля
+# Функции для работы с пользователями и профилем
 
 @lab5.route('/lab5/users')
 def users_list():
+    # авторизован ли пользователь
     login = session.get('login')
     if not login:
         return redirect('/lab5/login')
 
     conn, cur = db_connect()
 
+    # список всех пользователей (только логины и имена, без паролей)
     if current_app.config['DB_TYPE'] == 'postgres':
         cur.execute("SELECT login, full_name FROM users ORDER BY login;")
     else:
@@ -391,6 +425,7 @@ def users_list():
     users = cur.fetchall()
 
     db_close(conn, cur)
+    
     return render_template('/lab5/users.html', users=users, login=login)
 
 @lab5.route('/lab5/change_password', methods=['GET', 'POST'])
@@ -399,14 +434,17 @@ def change_password():
     if not login:
         return redirect('/lab5/login')
 
+    # GET запрос отображение формы смены пароля
     if request.method == 'GET':
         return render_template('lab5/change_password.html', login=login)
 
-    # POST смена пароля
+    # POST запрос смена пароля
+    # Получаем данные из формы
     current_password = request.form.get('current_password')
     new_password = request.form.get('new_password')
     confirm_password = request.form.get('confirm_password')
 
+    # Валидация
     if not current_password or not new_password or not confirm_password:
         return render_template('lab5/change_password.html', 
                               error='Заполните все поля')
@@ -417,7 +455,7 @@ def change_password():
 
     conn, cur = db_connect()
 
-    # проверяем текущий пароль
+    # Проверяем текущий пароль пользователя
     if current_app.config['DB_TYPE'] == 'postgres':
         cur.execute("SELECT password FROM users WHERE login=%s;", (login,))
     else:
@@ -425,12 +463,13 @@ def change_password():
     
     user = cur.fetchone()
     
+    # Если текущий пароль неверен, показываем ошибку
     if not user or not check_password_hash(user['password'], current_password):
         db_close(conn, cur)
         return render_template('lab5/change_password.html', 
                               error='Текущий пароль неверен')
 
-    # обновляем пароль
+    # Хэшируем новый пароль и обновляем его в базе данных
     new_password_hash = generate_password_hash(new_password)
     if current_app.config['DB_TYPE'] == 'postgres':
         cur.execute("UPDATE users SET password=%s WHERE login=%s;", 
@@ -440,6 +479,7 @@ def change_password():
                     (new_password_hash, login))
     
     db_close(conn, cur)
+    
     return redirect('/lab5/profile')
 
 @lab5.route('/lab5/profile', methods=['GET', 'POST'])
@@ -450,19 +490,25 @@ def profile():
 
     conn, cur = db_connect()
 
+    # GET запрос отображение формы профиля
     if request.method == 'GET':
+        # Получаем текущее имя пользователя
         if current_app.config['DB_TYPE'] == 'postgres':
             cur.execute("SELECT full_name FROM users WHERE login=%s;", (login,))
         else:
             cur.execute("SELECT full_name FROM users WHERE login=?;", (login,))
         
         user = cur.fetchone()
+        
+        # Закрываем соединение и отображаем форму
         db_close(conn, cur)
         return render_template('lab5/profile.html', user=user, login=login)
 
-    # POST обновление имени
+    # POST запрос обновление имени пользователя
+    # Получаем новое имя из формы
     full_name = request.form.get('full_name')
 
+    # Обновляем имя пользователя в базе данных
     if current_app.config['DB_TYPE'] == 'postgres':
         cur.execute("UPDATE users SET full_name=%s WHERE login=%s;", 
                     (full_name, login))
@@ -471,4 +517,5 @@ def profile():
                     (full_name, login))
     
     db_close(conn, cur)
+    
     return redirect('/lab5')
