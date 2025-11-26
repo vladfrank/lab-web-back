@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, jsonify, abort
 
 lab7 = Blueprint('lab7', __name__)
 
@@ -6,4 +6,42 @@ lab7 = Blueprint('lab7', __name__)
 def main():
     return render_template('lab7/lab7.html')
 
-    
+beers = [
+    {
+        "title": "ZATECKY GUS",
+        "title_ru": "Гусь",
+        "strength": 3.5,
+        "description": "Пиво Zatecky Gus Cerny - это богатый вкус с нотками \
+        поджаренного солода, карамели и бархатным ароматом жатецкого хмеля. \
+        Рекомендуется упортреблять в охлажденном виде",
+    },
+    {
+        "title": "STELLA ARTOIS МРК",
+        "title_ru": "Стелла",
+        "strength": 5,
+        "description": "Самое популярное в мире бельгийское легкое пиво \
+        премиум класса, имеет изысканный горьковатый оттенок, что выделяет \
+        его на фоне других традиционных европейских сортов типа «лагер» \
+        и высоко ценится знатоками пива. Рекомендуется употреблять \
+        охлажденным. Отлично подходит для пикника или летнего застолья \
+        с друзьями, легко пьется.",
+    },
+    {
+        "title": "SPATEN MUNCHEN HELLES",
+        "title_ru": "Шпатен",
+        "strength": 5.2,
+        "description": "Пиво умеренной крепости, с мягким пряным вкусом, \
+        превосходно сочетающим в себе горечь хмеля и сладость \
+        пивного сусла",
+    }
+]
+
+@lab7.route('/lab7/rest-api/beers/', methods=['GET'])
+def get_films():
+    return beers
+
+@lab7.route('/lab7/rest-api/beers/<int:id>', methods=['GET'])
+def get_film(id):
+    if id < 0 or id >= len(beers):
+        abort(404)
+    return beers[id]
