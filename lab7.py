@@ -55,3 +55,11 @@ def del_beer(id):
     del beers[id]
     return '', 204
 
+
+@lab7.route('/lab7/rest-api/beers/<int:id>', methods=['PUT'])
+def put_beer(id):
+    if id < 0 or id >= len(beers):
+        abort(404)
+    beer = request.get_json()
+    beers[id] = beer
+    return beers[id]
