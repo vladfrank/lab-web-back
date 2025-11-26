@@ -141,7 +141,7 @@ function getOfficeList() {
         return response.json()  // Парсим JSON ответ
     })
     .then(function(data) {
-        const office_list = data.result;  // Получаем список офисов из ответа
+        const office_list = data.result.office_list;  // Получаем список офисов из ответа
         const ul = document.getElementById('office-list');
         ul.innerHTML = ''; // Очищаем список перед заполнением
         
@@ -182,7 +182,7 @@ function getOfficeList() {
                 buttonGroup.appendChild(cancelButton);
                 
                 // Добавляем стоимость к общей сумме
-                if (office.tenant == login) {
+                if (office.tenant == data.result.login) {
                     totalCost += office.price;
                     userBookedOffices.push(office);
                 }

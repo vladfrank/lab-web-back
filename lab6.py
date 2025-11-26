@@ -128,6 +128,8 @@ def api():
                 cur.execute('SELECT number, tenant, price FROM offices ORDER BY number')
             
             offices = cur.fetchall()
+
+            login = session.get('login')
             
             # Конвертируем результаты в список словарей для JSON
             offices_list = []
@@ -143,8 +145,8 @@ def api():
             # Возвращаем успешный ответ с данными об офисах
             return {
                 'jsonrpc': '2.0',
-                'result': offices_list,
-                'id': id
+                'result': {offices_list: offices_list, login: login},
+                'id': id,
             }
         except Exception as e:
             # Обработка ошибок базы данных
