@@ -57,6 +57,8 @@ function deleteBeer(id, title) {
 }
 
 function showModal() {
+    // Очищаем сообщения об ошибках при открытии модального окна
+    document.getElementById('description-error').innerText = '';
     document.querySelector('div.modal').style.display = 'block';
 }
 function hideModal() {
@@ -92,9 +94,17 @@ function sendBeer() {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(beer)
     })
-    .then(function() {
-        fillBeerList();
-        hideModal();
+    .then(function(resp) {
+        if(resp.ok) {
+            fillBeerList();
+            hideModal(); 
+            return {};
+        }
+        return resp.json();
+    })
+    .then(function(errors) {
+        if(errors.description)
+            document.getElementById('description-error').innerText = errors.description;
     });
 }
 

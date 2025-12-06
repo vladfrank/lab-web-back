@@ -61,6 +61,8 @@ def put_beer(id):
     if id < 0 or id >= len(beers):
         abort(404)
     beer = request.get_json()
+    if not beer.get('description') or beer['description'].strip() == '':
+        return {'description': 'Заполните описание'}, 400
     beers[id] = beer
     return jsonify(beers[id])
 
@@ -68,5 +70,7 @@ def put_beer(id):
 @lab7.route('/lab7/rest-api/beers/', methods=['POST'])
 def add_beer():
     beer = request.get_json()
+    if not beer.get('description') or beer['description'].strip() == '':
+        return {'description': 'Заполните описание'}, 400
     beers.append(beer)
     return jsonify(len(beers) - 1), 201
