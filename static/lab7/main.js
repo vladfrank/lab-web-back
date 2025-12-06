@@ -29,21 +29,16 @@ function fillBeerList() {
                 // Крепость
                 tdStrength.textContent = beer.strength + '%';
 
-                // Описание с обрезкой
-                let desc = beer.description || '';
-                if (desc.length > 100) {
-                    desc = desc.substring(0, 100) + '...';
-                }
-                tdDesc.textContent = desc;
+                tdDesc.textContent = beer.description || '';
 
                 // Кнопки
                 const editBtn = document.createElement('button');
                 editBtn.textContent = 'Редактировать';
-                editBtn.onclick = () => editBeer(index);
+                editBtn.onclick = () => editBeer(beer.id);
 
                 const delBtn = document.createElement('button');
                 delBtn.textContent = 'Удалить';
-                delBtn.onclick = () => deleteBeer(index, beer.title_ru);
+                delBtn.onclick = () => deleteBeer(beer.id, beer.title_ru);
 
                 tdActions.append(editBtn, delBtn);
 
@@ -65,7 +60,12 @@ function deleteBeer(id, title) {
 }
 
 function showModal() {
+    // Очищаем все ошибки при открытии модалки
+    document.getElementById('title-ru-error').textContent = '';
+    document.getElementById('title-error').textContent = '';
+    document.getElementById('strength-error').textContent = '';
     document.getElementById('description-error').textContent = '';
+
     document.querySelector('.modal').style.display = 'block';
     document.querySelector('.modal-backdrop').style.display = 'block';
 }
@@ -91,16 +91,21 @@ function addBeer() {
 function sendBeer() {
     const id = document.getElementById('id').value;
 
+    // Очищаем все ошибки перед отправкой
+    document.getElementById('title-ru-error').textContent = '';
+    document.getElementById('title-error').textContent = '';
+    document.getElementById('strength-error').textContent = '';
+    document.getElementById('description-error').textContent = '';
+
     const beer = {
         title_ru: document.getElementById('title-ru').value.trim(),
         title: document.getElementById('title').value.trim(),
-        strength: parseFloat(document.getElementById('year').value) || 0,
+        strength: document.getElementById('year').value || 0,
         description: document.getElementById('description').value.trim()
     };
 
-    // Если оригинальное название пустое — не отправляем поле (бэкенд сам скопирует русское)
     if (!beer.title) {
-        delete beer.title;
+        delete beer.title; // бэкенд сам скопирует русское
     }
 
     const method = id ? 'PUT' : 'POST';
@@ -118,12 +123,20 @@ function sendBeer() {
         fillBeerList();
         hideModal();
     })
-    .catch(err => {
-        if (err.description) {
-            document.getElementById('description-error').textContent = err.description;
+    .catch(errors => {
+        // errors — это объект вида: { title_ru: "...", strength: "...", description: "..." }
+
+        if (errors.title_ru) {
+            document.getElementById('title-ru-error').textContent = errors.title_ru;
         }
-        if (err.title_ru) {
-            alert(err.title_ru);
+        if (errors.title) {
+            document.getElementById('title-error').textContent = errors.title;
+        }
+        if (errors.strength) {
+            document.getElementById('strength-error').textContent = errors.strength;
+        }
+        if (errors.description) {
+            document.getElementById('description-error').textContent = errors.description;
         }
     });
 }
