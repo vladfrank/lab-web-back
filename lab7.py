@@ -38,14 +38,14 @@ beers = [
 
 @lab7.route('/lab7/rest-api/beers/', methods=['GET'])
 def get_beers():
-    return beers
+    return jsonify(beers)
 
 
 @lab7.route('/lab7/rest-api/beers/<int:id>', methods=['GET'])
 def get_beer(id):
     if id < 0 or id >= len(beers):
         abort(404)
-    return beers[id]
+    return jsonify(beers[id])
 
 
 @lab7.route('/lab7/rest-api/beers/<int:id>', methods=['DELETE'])
@@ -62,7 +62,7 @@ def put_beer(id):
         abort(404)
     beer = request.get_json()
     beers[id] = beer
-    return beers[id]
+    return jsonify(beers[id])
 
 
 @lab7.route('/lab7/rest-api/beers/', methods=['POST'])
@@ -70,5 +70,3 @@ def add_beer():
     beer = request.get_json()
     beers.append(beer)
     return jsonify(len(beers) - 1), 201
-
-    

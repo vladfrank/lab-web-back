@@ -22,6 +22,9 @@ function fillBeerList() {
 
             let editButton = document.createElement('button');
             editButton.innerText = 'редактировать';
+            editButton.onclick = function() {
+                editBeer(i);
+            };
 
             let delButton = document.createElement('button');
             delButton.innerText = 'удалить';
@@ -73,15 +76,16 @@ function addBeer() {
 }
 
 function sendBeer() {
+    const id = document.getElementById('id').value;
     const beer = {
         title: document.getElementById('title').value,
         title_ru: document.getElementById('title-ru').value,
-        year: document.getElementById('year').value,
+        strength: parseFloat(document.getElementById('year').value) || 0,
         description: document.getElementById('description').value
     }
 
-    const url = `/lab7/rest-api/beers/`;
-    const method = 'POST';
+    const url = id === '' ? `/lab7/rest-api/beers/` : `/lab7/rest-api/beers/${id}`;
+    const method = id === '' ? 'POST' : 'PUT';
 
     fetch(url, {
         method: method,
@@ -92,4 +96,19 @@ function sendBeer() {
         fillBeerList();
         hideModal();
     });
+}
+
+function editBeer(id) {
+    fetch(`/lab7/rest-api/beers/${id}`)
+    .then(function (data) {
+        return data.json();
+    })
+    .then(function (beer) {
+        document.getElementById('id').value = id;
+        document.getElementById('title').value = beer.title;
+        document.getElementById('title-ru').value = beer.title_ru;
+        document.getElementById('year').value = beer.strength; 
+        document.getElementById('description').value = beer.description;
+        showModal();
+    })
 }

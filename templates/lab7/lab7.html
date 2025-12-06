@@ -56,13 +56,13 @@
         </label><br>
 
         <label>
-            Крепкость:
-            <input type="number" id="year">
+            Крепкость (%):
+            <input type="number" id="year" step="0.1" min="0" max="100">
         </label><br>
 
         <label>
             Описание:
-            <textarea id="description"></textarea>
+            <textarea id="description" rows="4" cols="40"></textarea>
         </label><br>
 
         <button onclick="sendBeer()">ОК</button>
