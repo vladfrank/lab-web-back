@@ -12,6 +12,7 @@ function fillBeerList() {
             let tdTitle = document.createElement('td');
             let tdTitleRus = document.createElement('td');
             let tdStrength = document.createElement('td');
+            let tdActions = document.createElement('td');
 
             tdTitle.innerText = beers[i].title == beers[i].title_ru ? '' : beers[i].title;
             tdTitleRus.innerText = beers[i].title_ru;
