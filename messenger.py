@@ -25,7 +25,7 @@ def db_connect():
         )
         cur = conn.cursor(cursor_factory=RealDictCursor)
     else:
-        db_path = path.join(path.dirname(path.realpath(__file__)), "messenger.db")
+        db_path = path.join(path.dirname(path.realpath(__file__)), "database.db")
         conn = sqlite3.connect(db_path)
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
