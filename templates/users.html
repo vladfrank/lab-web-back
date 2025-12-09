@@ -1,0 +1,15 @@
+{% extends "rgzbase.html" %}
+{% block content %}
+<h2>Пользователи</h2>
+<div class="users-grid">
+    {% for u in users %}
+        <div class="user-card">
+            <img src="{{ u.avatar or '/static/avatars/default.png' }}" width="50" height="50">
+            <div class="user-info">
+                {{ u.full_name }} ({{ u.login }})
+            </div>
+            <a class="btn" href="{{ url_for('messenger.chat', uid=u.id) }}">Чат</a>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

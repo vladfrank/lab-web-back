@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Скучаю — {{ fio }} — {{ group }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='avatars/company_logo.png') }}">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='avatars/company_logo.png') }}">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='avatars/company_logo.png') }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='avatars/company_logo.png') }}">
+<style>
+.highlight {
+    color: #4a90e2;
+    font-weight: bold;
+}
+</style>
+</head>
+<body>
+<header class="header">
+    <div class="header-left">
+        <img src="{{ url_for('static', filename='avatars/company_logo.png') }}" class="header-logo">
+        <span class="highlight">Скучаю</span> | {{ fio }} | {{ group }}
+    </div>
+    <nav class="nav">
+        <a href="{{ url_for('messenger.messenger_main') }}">Главная</a>
+        {% if session.get('login') %}
+            <a href="{{ url_for('messenger.list_users') }}">Пользователи</a>
+            {% if session.get('role') == 'admin' %}
+                <a href="{{ url_for('messenger.admin') }}">Админка</a>
+            {% endif %}
+            <a href="{{ url_for('messenger.logout') }}">Выйти</a>
+        {% else %}
+            <a href="{{ url_for('messenger.login') }}">Войти</a>
+            <a href="{{ url_for('messenger.register') }}">Регистрация</a>
+        {% endif %}
+    </nav>
+</header>
+<main class="container">
+    {% block content %}{% endblock %}
+</main>
+</body>
+</html>

@@ -124,7 +124,6 @@ function sendBeer() {
         hideModal();
     })
     .catch(errors => {
-        // errors — это объект вида: { title_ru: "...", strength: "...", description: "..." }
 
         if (errors.title_ru) {
             document.getElementById('title-ru-error').textContent = errors.title_ru;

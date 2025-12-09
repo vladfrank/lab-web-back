@@ -1,0 +1,57 @@
+{% extends "rgzbase.html" %}
+{% block content %}
+<style>
+.welcome-card {
+    background-color: #1e1e1e;
+    padding: 50px 40px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0,0,0,0.6);
+    transform: translateY(30px);
+    transition: all 0.8s ease-out;
+}
+
+.company-logo {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 10px;
+}
+
+.title {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.highlight {
+    color: #4a90e2;
+    font-weight: bold;
+}
+
+.subtitle {
+    font-size: 1.2em;
+}
+
+.btn-link {
+    color: #4a90e2;
+    font-weight: bold;
+    text-decoration: none;
+    transition: transform 0.3s, color 0.3s;
+}
+
+.btn-link:hover {
+    transform: scale(1.1);
+    color: #1c6ed5;
+}
+</style>
+
+<div class="welcome-card animate-fade">
+    <img src="{{ url_for('static', filename='avatars/company_logo.png') }}" class="company-logo">
+    <h1 class="animate-slide">Добро пожаловать в <span class="highlight">Скучаю</span></h1>
+    <p class="animate-slide-delay">
+        Пожалуйста, 
+        <a href="{{ url_for('messenger.login') }}" class="btn-link">войдите</a> или 
+        <a href="{{ url_for('messenger.register') }}" class="btn-link">зарегистрируйтесь</a> для общения.
+    </p>
+</div>
+{% endblock %}

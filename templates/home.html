@@ -1,0 +1,13 @@
+{% extends "rgzbase.html" %}
+{% block content %}
+<div class="home-card">
+    <h1>Главная</h1>
+    <p>Вы вошли как <strong>{{ session.get('login') }}</strong></p>
+    <div class="home-links">
+        <a class="btn" href="{{ url_for('messenger.list_users') }}">Список пользователей</a>
+        {% if session.get('role') == 'admin' %}
+        <a class="btn" href="{{ url_for('messenger.admin') }}">Админка</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "rgzbase.html" %}
+{% block content %}
+<div class="chat-container">
+    <h2>Чат с {{ user.full_name }}</h2>
+    <div id="messages" class="chat-messages">
+        {% for m in messages %}
+            <div class="msg {% if m.sender_id == session.user_id %}mine{% else %}other{% endif %}">
+                <div class="avatar-msg">
+                    {% if m.sender_avatar %}
+                        <img src="{{ m.sender_avatar }}" class="avatar-small">
+                    {% else %}
+                        <div class="avatar-placeholder">👤</div>
+                    {% endif %}
+                </div>
+                <div class="msg-content">
+                    <span class="text">{{ m.text }}</span>
+                    <span class="time">{{ m.created_at }}</span>
+                </div>
+                {% if m.sender_id == session.user_id %}
+                    <button class="delete-btn" onclick="deleteMessage({{ m.id }})">✖</button>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    <form id="send-form" class="chat-form" enctype="multipart/form-data">
+        <input type="hidden" id="receiver_id" value="{{ user.id }}">
+        <textarea id="msg-text" placeholder="Напишите сообщение..."></textarea>
+        <button type="submit">Отправить</button>
+    </form>
+</div>
+<script src="{{ url_for('messenger.static', filename='js/chat.js') }}"></script>
+{% endblock %}

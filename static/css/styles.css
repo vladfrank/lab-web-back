@@ -1,0 +1,143 @@
+/* Общие настройки */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    background-color: #121212;
+    color: #eee;
+}
+
+header.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #1f1f1f;
+    border-bottom: 1px solid #333;
+}
+
+.header-left { font-weight: bold; font-size: 1.2em; }
+
+.nav a {
+    color: #eee;
+    margin-left: 15px;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background 0.2s;
+}
+
+.nav a:hover { background: #333; color: #00bfff; }
+
+.container { padding: 20px; max-width: 900px; margin: auto; }
+
+/* Карточки */
+.form-card, .home-card, .welcome-card {
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    margin-bottom: 20px;
+}
+
+.form-card input, .form-card textarea {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0 15px 0;
+    border-radius: 5px;
+    border: none;
+    background-color: #2a2a2a;
+    color: #fff;
+}
+
+button, .btn, .btn-delete {
+    background-color: #00bfff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+button:hover, .btn:hover, .btn-delete:hover { background-color: #009acd; }
+
+.error { color: #ff4c4c; }
+
+/* Сетка пользователей */
+.users-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.user-card {
+    background: #1e1e1e;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+/* Чат */
+.chat-container { display: flex; flex-direction: column; }
+.chat-messages {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 10px;
+    height: 400px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+.msg { margin: 5px 0; padding: 8px 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+.msg.mine { background: #2a2a2a; align-self: flex-end; }
+.msg.other { background: #333333; align-self: flex-start; }
+.msg .text { flex-grow: 1; }
+.msg .time { font-size: 0.75em; color: #999; margin-left: 10px; }
+.delete-btn { background: transparent; color: #ff4c4c; border: none; font-weight: bold; cursor: pointer; }
+
+.chat-form { display: flex; flex-direction: column; }
+.chat-form textarea { resize: none; height: 60px; padding: 8px; margin-bottom: 10px; }
+
+.avatar-small {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #999;
+    font-size: 20px;
+}
+
+.msg {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.msg-content {
+    background-color: #2a2a2a;
+    padding: 8px 12px;
+    border-radius: 10px;
+    max-width: 70%;
+}
+
+.header-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+    vertical-align: middle;
+}

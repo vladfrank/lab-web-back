@@ -1,0 +1,34 @@
+{% extends "rgzbase.html" %}
+{% block content %}
+<h2>Админка</h2>
+<div class="admin-table">
+<table>
+<tr>
+    <th>ID</th>
+    <th>Аватар</th>
+    <th>Логин</th>
+    <th>ФИО</th>
+    <th>Роль</th>
+    <th>Действия</th>
+</tr>
+{% for u in users %}
+<tr>
+    <td>{{ u.id }}</td>
+    <td>
+        {% if u.avatar %}
+        <img src="{{ u.avatar }}" class="avatar-small">
+        {% else %}
+        <div class="avatar-placeholder">👤</div>
+        {% endif %}
+    </td>
+    <td>{{ u.login }}</td>
+    <td>{{ u.full_name }}</td>
+    <td>{{ u.role }}</td>
+    <td>
+        <a class="btn-delete" href="{{ url_for('messenger.admin_delete', uid=u.id) }}">Удалить</a>
+    </td>
+</tr>
+{% endfor %}
+</table>
+</div>
+{% endblock %}
