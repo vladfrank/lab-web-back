@@ -155,11 +155,12 @@ def login():
 
     if not user or not check_password_hash(user["password_hash"], password):
         return render_template("login.html", error="Неверный логин или пароль")
+    
 
     session["user_id"] = user["id"]
     session["login"] = user["login"]
     session["role"] = user["role"]
-    session["avatar"] = user.get("avatar")
+    session["avatar"] = user.get("avatar", "/static/avatars/default.png")
     return redirect("/messenger/home")
 
 
