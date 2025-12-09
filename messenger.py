@@ -295,7 +295,7 @@ def admin():
     cur.execute("SELECT id, login, full_name, role, avatar FROM lovina_users")
     users = cur.fetchall()
     db_close(conn, cur)
-    return render_template("admin.html", users=users)
+    return render_template("admin.html", fio="Владислав Франк", group="ФБИ-31", users=users)
 
 @messenger.route("/messenger/admin/delete/<int:uid>")
 def admin_delete(uid):
