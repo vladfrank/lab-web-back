@@ -7,39 +7,55 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 from os import path, makedirs
 
+# Создаём Blueprint — он позволяет вынести часть логики
+# в отдельный модуль и подключить в основном приложении.
 messenger = Blueprint("messenger", __name__, template_folder="templates", static_folder="static")
 
+# Допустимые расширения файлов аватаров
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
+# Функция проверки разрешённости файла по расширению
 def allowed_file(filename):
+    # Файл должен содержать точку и расширение должно быть корректным
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-#        БАЗА ДАННЫХ
+
+#                        БАЗА ДАННЫХ
+# Подключение к БД. Поддерживается и PostgreSQL, и SQLite.
 def db_connect():
     if current_app.config['DB_TYPE'] == 'postgres':
+        # Подключение к PostgreSQL
         conn = psycopg2.connect(
             host="127.0.0.1",
             database="vlad_frank_knowledge_base",
             user="vlad_frank_knowledge_base",
             password="123"
         )
+        # RealDictCursor возвращает строки как dict (для удобства)
         cur = conn.cursor(cursor_factory=RealDictCursor)
     else:
+        # Подключение к SQLite
         db_path = path.join(path.dirname(path.realpath(__file__)), "database.db")
         conn = sqlite3.connect(db_path)
-        conn.row_factory = sqlite3.Row
+        conn.row_factory = sqlite3.Row  # тоже как словарь
         cur = conn.cursor()
+
     return conn, cur
 
-def db_close(conn, cur):
-    conn.commit()
-    cur.close()
-    conn.close()
 
-#        ИНИЦИАЛИЗАЦИЯ SQLite
+# Корректное закрытие соединения
+def db_close(conn, cur):
+    conn.commit()     # сохраняем изменения
+    cur.close()       # закрываем курсор
+    conn.close()      # закрываем соединение
+
+
+#      ИНИЦИАЛИЗАЦИЯ SQLite (создание таблиц)
 @messenger.route("/messenger/init_sqlite")
 def init_sqlite():
     conn, cur = db_connect()
+
+    # Создание таблицы пользователей
     cur.execute("""
     CREATE TABLE IF NOT EXISTS lovina_users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -50,6 +66,8 @@ def init_sqlite():
         avatar TEXT DEFAULT NULL
     );
     """)
+
+    # Создание таблицы сообщений
     cur.execute("""
     CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -61,13 +79,18 @@ def init_sqlite():
         FOREIGN KEY(receiver_id) REFERENCES lovina_users(id)
     );
     """)
+
     db_close(conn, cur)
     return "SQLite initialized"
 
 
-#          ВАЛИДАЦИЯ
+#                 ВАЛИДАЦИЯ ВВЕДЁННЫХ ДАННЫХ
 import re
+
+# Регулярка: логин от 3 до 32 символов, буквы/цифры/.-_
 LOGIN_RE = re.compile(r"^[A-Za-z0-9_.-]{3,32}$")
+
+# Пароль — 6-64 символов, буквы/цифры/часть спецсимволов
 PASS_RE = re.compile(r"^[A-Za-z0-9!@#$%^&*()._-]{6,64}$")
 
 def validate_login(login):
@@ -77,48 +100,65 @@ def validate_password(password):
     return password and PASS_RE.match(password)
 
 
-#      НЕАВТОРИЗОВАННАЯ СТРАНИЦА
+#            ГЛАВНАЯ СТРАНИЦА НЕАВТОРИЗОВАННОГО ПОЛЬЗОВАТЕЛЯ
 @messenger.route("/messenger/")
 def messenger_main():
+    # Если пользователь не вошёл — показываем приветственную страницу
     if "user_id" not in session:
         return render_template("welcome.html", fio="Владислав Франк", group="ФБИ-31")
+    # Если уже вошёл — отправляем в личный кабинет
     return redirect("/messenger/home")
 
 
-#          РЕГИСТРАЦИЯ
+#                         РЕГИСТРАЦИЯ
 @messenger.route("/messenger/register", methods=["GET", "POST"])
 def register():
+    # Просто отображаем форму
     if request.method == "GET":
         return render_template("register.html", fio="Владислав Франк", group="ФБИ-31")
 
+    # Получаем данные с формы
     login = request.form.get("login")
     password = request.form.get("password")
     full_name = request.form.get("full_name")
     file = request.files.get("avatar")
 
+    # Проверка логина и пароля
     if not validate_login(login):
         return render_template("register.html", error="Неверный формат логина")
     if not validate_password(password):
         return render_template("register.html", error="Неверный пароль")
 
+    # Загрузка аватара, если указан
     avatar_path = None
     if file and allowed_file(file.filename):
+        # secure_filename — защита имени файла
         filename = secure_filename(f"{login}_{file.filename}")
+
+        # Создаём папку avatars, если нет
         avatar_dir = path.join(current_app.root_path, 'static', 'avatars')
         makedirs(avatar_dir, exist_ok=True)
+
+        # Сохраняем файл
         file.save(path.join(avatar_dir, filename))
         avatar_path = f"/static/avatars/{filename}"
 
     conn, cur = db_connect()
+
+    # Проверяем, существует ли пользователь с таким логином
     if current_app.config["DB_TYPE"] == "postgres":
         cur.execute("SELECT id FROM lovina_users WHERE login=%s", (login,))
     else:
         cur.execute("SELECT id FROM lovina_users WHERE login=?", (login,))
+
     if cur.fetchone():
         db_close(conn, cur)
         return render_template("register.html", error="Пользователь уже существует")
 
+    # Хешируем пароль
     password_hash = generate_password_hash(password)
+
+    # Записываем данные в БД
     if current_app.config["DB_TYPE"] == "postgres":
         cur.execute("""
             INSERT INTO lovina_users (login, password_hash, full_name, role, avatar)
@@ -136,9 +176,10 @@ def register():
     return redirect("/messenger/login")
 
 
-#              ЛОГИН
+#                            ЛОГИН
 @messenger.route("/messenger/login", methods=["GET", "POST"])
 def login():
+    # Просто рисуем форму
     if request.method == "GET":
         return render_template("login.html", fio="Владислав Франк", group="ФБИ-31")
 
@@ -146,32 +187,37 @@ def login():
     password = request.form.get("password")
 
     conn, cur = db_connect()
+
+    # Ищем пользователя
     if current_app.config["DB_TYPE"] == "postgres":
         cur.execute("SELECT * FROM lovina_users WHERE login=%s", (login_val,))
     else:
         cur.execute("SELECT * FROM lovina_users WHERE login=?", (login_val,))
+
     user = cur.fetchone()
     db_close(conn, cur)
 
+    # Проверка логина/пароля + хеш
     if not user or not check_password_hash(user["password_hash"], password):
         return render_template("login.html", error="Неверный логин или пароль")
     
-
+    # Записываем данные в сессию
     session["user_id"] = user["id"]
     session["login"] = user["login"]
     session["role"] = user["role"]
     session["avatar"] = user.get("avatar", "/static/avatars/default.png")
+
     return redirect("/messenger/home")
 
 
-#          ВЫХОД
+#                           ВЫХОД
 @messenger.route("/messenger/logout")
 def logout():
-    session.clear()
+    session.clear()  # стираем все данные сессии
     return redirect("/messenger/")
 
 
-#     ГЛАВНАЯ СТРАНИЦА ПОСЛЕ ЛОГИНА
+#                 ЛИЧНЫЙ КАБИНЕТ ПОСЛЕ ЛОГИНА
 @messenger.route("/messenger/home")
 def home():
     if "user_id" not in session:
@@ -179,28 +225,34 @@ def home():
     return render_template("home.html", fio="Владислав Франк", group="ФБИ-31", avatar=session.get("avatar"))
 
 
-#      СПИСОК ВСЕХ ПОЛЬЗОВАТЕЛЕЙ
+#                  СПИСОК ВСЕХ ПОЛЬЗОВАТЕЛЕЙ
 @messenger.route("/messenger/users")
 def list_users():
     if "user_id" not in session:
         return redirect("/messenger/")
+
     conn, cur = db_connect()
     cur.execute("SELECT id, login, full_name, avatar FROM lovina_users")
     users = cur.fetchall()
     db_close(conn, cur)
+
     return render_template("users.html", fio="Владислав Франк", group="ФБИ-31", users=users)
 
 
-#       ЧАТ С ОПРЕДЕЛЁННЫМ ЧЕЛОВЕКОМ
+#           СТРАНИЦА ЧАТА С КОНКРЕТНЫМ ПОЛЬЗОВАТЕЛЕМ
 @messenger.route("/messenger/chat/<int:uid>")
 def chat(uid):
     if "user_id" not in session:
         return redirect("/messenger/")
+
     conn, cur = db_connect()
+
+    # Получаем данные собеседника
     cur.execute("SELECT * FROM lovina_users WHERE id=%s" if current_app.config["DB_TYPE"]=="postgres"
                 else "SELECT * FROM lovina_users WHERE id=?", (uid,))
     user = cur.fetchone()
 
+    # Получаем переписку
     if current_app.config["DB_TYPE"] == "postgres":
         cur.execute("""
             SELECT m.id, m.sender_id, m.receiver_id, m.content AS text, m.created_at,
@@ -219,12 +271,14 @@ def chat(uid):
             WHERE (m.sender_id=? AND m.receiver_id=?) OR (m.sender_id=? AND m.receiver_id=?)
             ORDER BY m.created_at
         """, (session["user_id"], uid, uid, session["user_id"]))
+
     messages = cur.fetchall()
     db_close(conn, cur)
+
     return render_template("chat.html", fio="Владислав Франк", group="ФБИ-31", user=user, messages=messages)
 
 
-#         ОТПРАВКА СООБЩЕНИЯ
+#                  ОТПРАВКА СООБЩЕНИЯ
 @messenger.route("/messenger/send", methods=["POST"])
 def send():
     if "user_id" not in session:
@@ -232,11 +286,15 @@ def send():
 
     receiver_id = request.form.get("receiver_id")
     text = request.form.get("text")
-    if not text or len(text.strip())==0:
+
+    # не позволяем отправлять пустые сообщения
+    if not text or len(text.strip()) == 0:
         return jsonify({"error": "Пустое сообщение"}), 400
 
     conn, cur = db_connect()
     ts = datetime.now().isoformat()
+
+    # добавляем сообщение в БД
     if current_app.config["DB_TYPE"] == "postgres":
         cur.execute("""
             INSERT INTO messages (sender_id, receiver_id, content, created_at)
@@ -247,28 +305,32 @@ def send():
             INSERT INTO messages (sender_id, receiver_id, content, created_at)
             VALUES (?, ?, ?, ?)
         """, (session["user_id"], receiver_id, text, ts))
+
     db_close(conn, cur)
     return jsonify({"ok": True})
 
 
-#        УДАЛЕНИЕ СООБЩЕНИЯ
+#                  УДАЛЕНИЕ СООБЩЕНИЯ
 @messenger.route("/messenger/delete_message/<int:msg_id>", methods=["POST"])
 def delete_message(msg_id):
     if "user_id" not in session:
         return jsonify({"error": "not auth"}), 403
 
     conn, cur = db_connect()
+
+    # Пользователь может удалить свои сообщения
     if current_app.config["DB_TYPE"]=="postgres":
         cur.execute("DELETE FROM messages WHERE id=%s AND (sender_id=%s OR receiver_id=%s)",
                     (msg_id, session["user_id"], session["user_id"]))
     else:
         cur.execute("DELETE FROM messages WHERE id=? AND (sender_id=? OR receiver_id=?)",
                     (msg_id, session["user_id"], session["user_id"]))
+
     db_close(conn, cur)
     return jsonify({"ok": True})
 
 
-#      УДАЛЕНИЕ АККАУНТА
+#                  УДАЛЕНИЕ АККАУНТА
 @messenger.route("/messenger/delete_account", methods=["POST"])
 def delete_account():
     if "user_id" not in session:
@@ -276,18 +338,24 @@ def delete_account():
 
     uid = session["user_id"]
     conn, cur = db_connect()
+
+    # Удаляем все сообщения пользователя
     cur.execute("DELETE FROM messages WHERE sender_id=? OR receiver_id=?" if current_app.config["DB_TYPE"]=="sqlite"
                 else "DELETE FROM messages WHERE sender_id=%s OR receiver_id=%s", (uid, uid))
+
+    # Удаляем сам аккаунт
     cur.execute("DELETE FROM lovina_users WHERE id=?" if current_app.config["DB_TYPE"]=="sqlite"
                 else "DELETE FROM lovina_users WHERE id=%s", (uid,))
+
     db_close(conn, cur)
     session.clear()
     return redirect("/messenger/")
 
 
-#              АДМИН
+#                         АДМИНКА
 @messenger.route("/messenger/admin")
 def admin():
+    # Проверка роли
     if session.get("role") != "admin":
         return "Access denied", 403
 
@@ -295,8 +363,11 @@ def admin():
     cur.execute("SELECT id, login, full_name, role, avatar FROM lovina_users")
     users = cur.fetchall()
     db_close(conn, cur)
+
     return render_template("admin.html", fio="Владислав Франк", group="ФБИ-31", users=users)
 
+
+# удаление пользователя админом
 @messenger.route("/messenger/admin/delete/<int:uid>")
 def admin_delete(uid):
     if session.get("role") != "admin":
@@ -306,4 +377,5 @@ def admin_delete(uid):
     cur.execute("DELETE FROM lovina_users WHERE id=?" if current_app.config["DB_TYPE"]=="sqlite"
                 else "DELETE FROM lovina_users WHERE id=%s", (uid,))
     db_close(conn, cur)
+
     return redirect("/messenger/admin")

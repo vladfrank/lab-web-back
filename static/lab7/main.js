@@ -1,3 +1,4 @@
+// Загружаем список пива
 function fillBeerList() {
     fetch('/lab7/rest-api/beers/')
         .then(response => response.json())
@@ -5,7 +6,7 @@ function fillBeerList() {
             const tbody = document.getElementById('beer-list');
             tbody.innerHTML = '';
 
-            beers.forEach((beer, index) => {
+            beers.forEach(beer => {
                 const tr = document.createElement('tr');
 
                 const tdRus = document.createElement('td');
@@ -16,42 +17,43 @@ function fillBeerList() {
 
                 // Русское название
                 tdRus.textContent = beer.title_ru;
-                tdRus.style.fontWeight = '500';
 
-                // Оригинальное название
-                if (beer.title?.trim()) {
-                    const span = document.createElement('span');
-                    span.className = 'original-name';
-                    span.textContent = `(${beer.title})`;
-                    tdOrig.appendChild(span);
+                // Оригинальное название: курсив + скобки
+                if (beer.title && beer.title.trim() !== "") {
+                    tdOrig.innerHTML = `<i>(${beer.title})</i>`;
+                } else {
+                    tdOrig.textContent = "—";
                 }
 
                 // Крепость
                 tdStrength.textContent = beer.strength + '%';
 
+                // Описание
                 tdDesc.textContent = beer.description || '';
 
                 // Кнопки
                 const editBtn = document.createElement('button');
                 editBtn.textContent = 'Редактировать';
+                editBtn.className = 'edit-button';
                 editBtn.onclick = () => editBeer(beer.id);
 
                 const delBtn = document.createElement('button');
                 delBtn.textContent = 'Удалить';
+                delBtn.className = 'delete-button';
                 delBtn.onclick = () => deleteBeer(beer.id, beer.title_ru);
 
                 tdActions.append(editBtn, delBtn);
 
-                // Собираем строку
                 tr.append(tdRus, tdOrig, tdStrength, tdDesc, tdActions);
                 tbody.appendChild(tr);
             });
+
         })
-        .catch(err => {
-            console.error('Не удалось загрузить список пива:', err);
-        });
+        .catch(err => console.error('Ошибка загрузки списка:', err));
 }
 
+
+// Удаление
 function deleteBeer(id, title) {
     if (!confirm(`Удалить пиво "${title}"?`)) return;
 
@@ -59,15 +61,16 @@ function deleteBeer(id, title) {
         .then(() => fillBeerList());
 }
 
+
+// Модалка
 function showModal() {
-    // Очищаем все ошибки при открытии модалки
+    document.querySelector('.modal').style.display = 'block';
+    document.querySelector('.modal-backdrop').style.display = 'block';
+
     document.getElementById('title-ru-error').textContent = '';
     document.getElementById('title-error').textContent = '';
     document.getElementById('strength-error').textContent = '';
     document.getElementById('description-error').textContent = '';
-
-    document.querySelector('.modal').style.display = 'block';
-    document.querySelector('.modal-backdrop').style.display = 'block';
 }
 
 function hideModal() {
@@ -79,23 +82,22 @@ function cancel() {
     hideModal();
 }
 
+
+// Добавление
 function addBeer() {
     document.getElementById('id').value = '';
     document.getElementById('title').value = '';
     document.getElementById('title-ru').value = '';
     document.getElementById('year').value = '';
     document.getElementById('description').value = '';
+
     showModal();
 }
 
+
+// Сохранение
 function sendBeer() {
     const id = document.getElementById('id').value;
-
-    // Очищаем все ошибки перед отправкой
-    document.getElementById('title-ru-error').textContent = '';
-    document.getElementById('title-error').textContent = '';
-    document.getElementById('strength-error').textContent = '';
-    document.getElementById('description-error').textContent = '';
 
     const beer = {
         title_ru: document.getElementById('title-ru').value.trim(),
@@ -104,12 +106,15 @@ function sendBeer() {
         description: document.getElementById('description').value.trim()
     };
 
+    // Если оригинал пуст — backend сам проставит title_ru
     if (!beer.title) {
-        delete beer.title; // бэкенд сам скопирует русское
+        delete beer.title;
     }
 
     const method = id ? 'PUT' : 'POST';
-    const url = id ? `/lab7/rest-api/beers/${id}` : '/lab7/rest-api/beers/';
+    const url = id
+        ? `/lab7/rest-api/beers/${id}`
+        : `/lab7/rest-api/beers/`;
 
     fetch(url, {
         method: method,
@@ -124,35 +129,29 @@ function sendBeer() {
         hideModal();
     })
     .catch(errors => {
-
-        if (errors.title_ru) {
-            document.getElementById('title-ru-error').textContent = errors.title_ru;
-        }
-        if (errors.title) {
-            document.getElementById('title-error').textContent = errors.title;
-        }
-        if (errors.strength) {
-            document.getElementById('strength-error').textContent = errors.strength;
-        }
-        if (errors.description) {
-            document.getElementById('description-error').textContent = errors.description;
-        }
+        if (errors.title_ru) document.getElementById('title-ru-error').textContent = errors.title_ru;
+        if (errors.title) document.getElementById('title-error').textContent = errors.title;
+        if (errors.strength) document.getElementById('strength-error').textContent = errors.strength;
+        if (errors.description) document.getElementById('description-error').textContent = errors.description;
     });
 }
 
-// ГЛАВНОЕ: всегда показываем настоящее оригинальное название при редактировании
+
+// Редактирование
 function editBeer(id) {
     fetch(`/lab7/rest-api/beers/${id}`)
         .then(resp => resp.json())
         .then(beer => {
             document.getElementById('id').value = id;
             document.getElementById('title-ru').value = beer.title_ru;
-            document.getElementById('title').value = beer.title || '';  // ← ВСЁ ВРЕМЯ ПОКАЗЫВАЕМ РЕАЛЬНОЕ ЗНАЧЕНИЕ
+            document.getElementById('title').value = beer.title || '';
             document.getElementById('year').value = beer.strength;
             document.getElementById('description').value = beer.description;
+
             showModal();
         });
 }
 
-// Запуск при загрузке страницы
+
+// Старт
 document.addEventListener('DOMContentLoaded', fillBeerList);

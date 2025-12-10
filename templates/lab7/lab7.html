@@ -4,107 +4,104 @@
 
 {% block script %}
 <script src="{{ url_for('static', filename='lab7/main.js') }}"></script>
+
 <style>
-    table { width: 100%; 
-        border-collapse: collapse; 
-        margin: 20px 0; 
-        box-shadow: 0 2px 8px rgba(0,0,0,0,0.1); 
-        border-radius: 8px; 
-        overflow: hidden; 
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 8px;
+        overflow: hidden;
     }
-    th { 
-        background: #4CAF50; 
-        color: white; 
-        padding: 12px 15px; 
-        text-align: left; 
+    th {
+        background: #4CAF50;
+        color: white;
+        padding: 12px 15px;
+        text-align: left;
     }
-    td { 
-        padding: 12px 15px; 
-        border-bottom: 1px solid #ddd; 
-        vertical-align: top; 
+    td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #ddd;
+        vertical-align: top;
     }
-    tr:hover { 
-        background: #f5f5f5; 
+    tr:hover {
+        background: #f5f5f5;
     }
-    button { 
-        padding: 8px 16px; 
-        margin: 4px; 
-        border: none; 
-        border-radius: 4px; 
-        cursor: pointer; 
+    button {
+        padding: 8px 16px;
+        margin: 4px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
     }
-    button:hover { 
-        opacity: 0.9; 
+    button:hover {
+        opacity: 0.9;
     }
-    button[onclick="addBeer()"] { 
-        background: #4CAF50; 
-        color: white; 
-        font-size: 16px; 
-        padding: 12px 24px; 
+    button.add-button {
+        background: #4CAF50;
+        color: white;
+        font-size: 16px;
+        padding: 12px 24px;
     }
-    button[onclick="sendBeer()"] { 
-        background: #4CAF50; 
-        color: white; 
+    button.save-button {
+        background: #4CAF50;
+        color: white;
     }
-    button[onclick="cancel()"] { 
-        background: #f44336; 
-        color: white; 
+    button.cancel-button {
+        background: #f44336;
+        color: white;
     }
-    button[onclick*="delete"] { 
-        background: #f44336; 
-        color: white; 
+    button.delete-button {
+        background: #f44336;
+        color: white;
     }
-    button[onclick*="edit"] { 
-        background: #2196F3; 
-        color: white; 
+    button.edit-button {
+        background: #2196F3;
+        color: white;
     }
-    .modal { 
-        display: none; 
-        position: fixed; 
-        z-index: 1000; 
-        left: 50%; 
-        top: 50%; 
-        transform: translate(-50%, -50%); 
-        background: white; 
-        padding: 30px; 
-        border-radius: 8px; 
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3); 
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         width: 500px;
     }
-    .modal-backdrop { 
-        display: none; 
-        position: fixed; 
-        top: 0; left: 0; 
-        width: 100%; 
-        height: 100%; 
-        background: rgba(0,0,0,0.5); 
-        z-index: 999; 
+    .modal-backdrop {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
     }
-    input, textarea { 
-        width: 100%; 
-        padding: 8px; 
-        margin-top: 5px; 
-        border: 1px solid #ddd; 
-        border-radius: 4px; 
-        box-sizing: border-box; 
+    input, textarea {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
     }
-    textarea { 
-        resize: vertical; 
-        min-height: 100px; 
+    textarea {
+        resize: vertical;
+        min-height: 100px;
     }
-    .error-message { 
-        color: #dc2626; 
-        font-size: 14px; 
-        margin-top: 5px; 
-        min-height: 20px; 
+    .error-message {
+        color: #dc2626;
+        font-size: 14px;
+        margin-top: 5px;
+        min-height: 20px;
     }
-    .original-name { 
-        font-style: italic; 
-        color: #666; 
-        font-size: 0.9em; 
-        display: block; 
-        margin-top: 2px; 
-    }
+
     td:nth-child(4) {
         max-width: 400px;
         word-wrap: break-word;
@@ -115,6 +112,7 @@
 {% endblock %}
 
 {% block main %}
+
 <h1>Список пива</h1>
 
 <table>
@@ -130,11 +128,11 @@
     <tbody id="beer-list"></tbody>
 </table>
 
-<button onclick="addBeer()">Добавить пиво</button>
+<button class="add-button" onclick="addBeer()">Добавить пиво</button>
 
 <div class="modal-backdrop" onclick="cancel()"></div>
 
-<div class="modal">
+<div class="modal" id="beer-modal">
     <input type="hidden" id="id">
 
     <label>
@@ -163,8 +161,9 @@
     </label>
 
     <div style="text-align:right; margin-top:20px;">
-        <button onclick="cancel()">Отмена</button>
-        <button onclick="sendBeer()">Сохранить</button>
+        <button class="cancel-button" onclick="cancel()">Отмена</button>
+        <button class="save-button" onclick="sendBeer()">Сохранить</button>
     </div>
 </div>
+
 {% endblock %}
