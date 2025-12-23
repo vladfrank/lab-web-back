@@ -10,6 +10,7 @@ from lab6 import lab6
 from lab7 import lab7
 from messenger import messenger
 from lab8 import lab8
+from lab9 import lab9
 app = Flask(__name__)
 import os
 from os import path
@@ -57,6 +58,7 @@ app.register_blueprint(lab6)
 app.register_blueprint(lab7)
 app.register_blueprint(messenger)
 app.register_blueprint(lab8)
+app.register_blueprint(lab9)
 
 from flask import request
 import datetime
@@ -182,6 +184,7 @@ def index():
             <a href="/lab7/">Лабораторная работа 7. API REST</a>
             <a href="/messenger/">РГЗ. Мессенджер</a>
             <a href="/lab8/">Лабораторная работа 8. Flask и ORM</a>
+            <a href="/lab9/">Лабораторная работа 9. Поздравление с Новым Годом</a>
         </ul>
 
         <footer>
