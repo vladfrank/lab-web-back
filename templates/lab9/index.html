@@ -10,7 +10,7 @@
     <title>Лабораторная работа 9 — Новогодние подарки</title>
     <style>
         body {
-            background: linear-gradient(135deg, #1e3c72, #2a5298); /* мягкий градиент */
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
             color: white;
             font-family: 'Segoe UI', sans-serif;
             margin: 0;
@@ -52,22 +52,20 @@
             z-index: 10;
         }
 
-        .gift-box:hover {
-            transform: scale(1.1); /* лёгкое увеличение при наведении */
-        }
+        .gift-box:hover { transform: scale(1.1); }
 
         .box-image {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* картинка заполняет круг */
+            object-fit: cover;
         }
 
         .gift-box.opened {
-            opacity: 0.5; /* полупрозрачный при открытии */
+            opacity: 0.5;
         }
 
         .gift-box.opened .box-image {
-            filter: grayscale(100%); /* чёрно-белый эффект */
+            filter: grayscale(100%);
         }
 
         #message {
@@ -75,7 +73,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.7); /* лёгкий фон */
+            background: rgba(0, 0, 0, 0.7);
             padding: 30px;
             border-radius: 15px;
             text-align: center;
@@ -108,10 +106,6 @@
             margin-top: 15px;
         }
 
-        #close-msg:hover {
-            background: #ffea00;
-        }
-
         #info {
             position: fixed;
             bottom: 20px;
@@ -122,19 +116,31 @@
             z-index: 100;
         }
 
-        #info button {
-            background: none;
-            border: none;
-            color: #fffd8e;
-            font-size: 1em;
-            cursor: pointer;
-            margin-top: 10px;
-            text-decoration: underline;
+        #user-status {
+            margin: 10px 0;
+            font-size: 1.1em;
         }
 
-        #info button:hover {
+        #santa-btn {
+            background: none;
+            border: 2px solid #ff3333;
+            color: #ff3333;
+            padding: 10px 20px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 12px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        #santa-btn:hover {
+            background: #ff3333;
             color: white;
         }
+
+        a { color: #fffd8e; text-decoration: underline; }
+        a:hover { color: white; }
     </style>
 </head>
 <body>
@@ -143,18 +149,23 @@
 
     <div id="info">
         Осталось подарков: <span id="remaining">10</span><br>
-        Открыто: <span id="opened">0</span> из 3<br>
-        <button id="reset-btn">Сбросить лимит</button>
+        Вы открыли: <span id="opened">0</span> из 3<br>
+
+        <div id="user-status">
+            <span id="auth-info">Вы не авторизованы. <a href="/lab8/login">Войти</a></span>
+        </div>
+
+        <button id="reset-btn">Сбросить мой лимит</button><br>
+
+        <button id="santa-btn">🎅 Дед Мороз: Наполнить все подарки!</button>
     </div>
 
-    <!-- Коробки -->
     {% for i in range(10) %}
     <div class="gift-box" data-id="{{ i }}" style="top: {{ positions[i].top }}; left: {{ positions[i].left }};">
         <img src="/static/lab9/gift{{ i + 1 }}.png" alt="Подарок {{ i + 1 }}" class="box-image">
     </div>
     {% endfor %}
 
-    <!-- Модальное окно -->
     <div id="message">
         <h2 id="congrats"></h2>
         <img id="gift-img" src="" alt="Поздравление">
@@ -162,7 +173,29 @@
     </div>
 
     <script>
-        // Снежинки (реже)
+        function updateStatus() {
+            fetch('/lab9/status')
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('remaining').textContent = data.remaining;
+                    document.getElementById('opened').textContent = data.opened_count;
+
+                    const authInfo = document.getElementById('auth-info');
+                    const santaBtn = document.getElementById('santa-btn');
+
+                    if (data.authenticated) {
+                        authInfo.innerHTML = `Привет, <strong>${data.username}</strong>! <a href="/lab8/logout">Выйти</a>`;
+                        santaBtn.style.display = 'inline-block';
+                    } else {
+                        authInfo.innerHTML = 'Вы не авторизованы. <a href="/lab8/login">Войти</a>';
+                        santaBtn.style.display = 'none';
+                    }
+                });
+        }
+
+        updateStatus();
+
+        // Снежинки
         function createSnowflake() {
             const snow = document.createElement('div');
             snow.className = 'snowflake';
@@ -174,19 +207,10 @@
         }
         setInterval(createSnowflake, 800);
 
-        // Начальное состояние
-        fetch('/lab9/status')
-            .then(r => r.json())
-            .then(data => {
-                document.getElementById('remaining').textContent = data.remaining;
-                document.getElementById('opened').textContent = data.opened_count;
-            });
-
-        // Клик по коробке
+        // Открытие коробки
         document.querySelectorAll('.gift-box').forEach(box => {
             box.addEventListener('click', function() {
                 if (this.classList.contains('opened')) return;
-
                 const boxId = parseInt(this.dataset.id);
 
                 fetch('/lab9/open', {
@@ -198,13 +222,10 @@
                 .then(data => {
                     if (data.success) {
                         this.classList.add('opened');
-
                         document.getElementById('congrats').textContent = data.text;
                         document.getElementById('gift-img').src = data.img;
                         document.getElementById('message').style.display = 'block';
-
-                        document.getElementById('remaining').textContent = data.remaining;
-                        document.getElementById('opened').textContent = data.opened_count;
+                        updateStatus();
                     } else {
                         alert(data.message);
                     }
@@ -212,23 +233,36 @@
             });
         });
 
-        // Сброс лимита
-        document.getElementById('reset-btn').addEventListener('click', function() {
-            if (confirm('Сбросить лимит?')) {
+        // Сброс личного лимита
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            if (confirm('Сбросить ваш лимит открытий?')) {
                 fetch('/lab9/reset', { method: 'POST' })
                     .then(r => r.json())
+                    .then(data => { updateStatus(); alert(data.message); });
+            }
+        });
+
+        // Дед Мороз — полный сброс
+        document.getElementById('santa-btn').addEventListener('click', () => {
+            if (confirm('Наполнить ВСЕ подарки заново?')) {
+                fetch('/lab9/santa', { method: 'POST' })
+                    .then(r => r.json())
                     .then(data => {
-                        document.getElementById('opened').textContent = data.opened_count;
-                        document.getElementById('remaining').textContent = data.remaining;
-                        alert(data.message);
+                        if (data.success) {
+                            document.querySelectorAll('.gift-box').forEach(b => b.classList.remove('opened'));
+                            updateStatus();
+                            alert(data.message);
+                        } else {
+                            alert(data.message);
+                        }
                     });
             }
         });
 
         // Закрытие модалки
-        document.getElementById('close-msg').addEventListener('click', () => {
+        document.getElementById('close-msg').onclick = () => {
             document.getElementById('message').style.display = 'none';
-        });
+        };
     </script>
 </body>
 </html>
