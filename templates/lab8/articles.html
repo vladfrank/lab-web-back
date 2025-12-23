@@ -3,6 +3,7 @@
 {% block main %}
 <h2>Статьи</h2>
 
+<!-- Поиск -->
 <form method="get" style="margin-bottom: 20px;">
     <input type="text" name="q" placeholder="Поиск по статьям"
            value="{{ request.args.get('q', '') }}">

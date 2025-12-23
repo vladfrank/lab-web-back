@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+    <title>Лабораторная работа 9 — Новогодние подарки</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1e3c72, #2a5298); /* мягкий градиент */
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 2.5em;
+            color: #fffd8e;
+            margin: 0;
+        }
+
+        .snowflake {
+            position: absolute;
+            color: white;
+            font-size: 1.2em;
+            opacity: 0.6;
+            pointer-events: none;
+            animation: fall linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh); }
+        }
+
+        .gift-box {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            z-index: 10;
+        }
+
+        .gift-box:hover {
+            transform: scale(1.1); /* лёгкое увеличение при наведении */
+        }
+
+        .box-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* картинка заполняет круг */
+        }
+
+        .gift-box.opened {
+            opacity: 0.5; /* полупрозрачный при открытии */
+        }
+
+        .gift-box.opened .box-image {
+            filter: grayscale(100%); /* чёрно-белый эффект */
+        }
+
+        #message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7); /* лёгкий фон */
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+            display: none;
+            z-index: 1000;
+        }
+
+        #message h2 {
+            margin: 0 0 15px;
+            font-size: 1.8em;
+            color: #fffd8e;
+        }
+
+        #gift-img {
+            width: 400px;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        #close-msg {
+            background: #fffd8e;
+            color: #1e3c72;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        #close-msg:hover {
+            background: #ffea00;
+        }
+
+        #info {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.2em;
+            text-align: center;
+            z-index: 100;
+        }
+
+        #info button {
+            background: none;
+            border: none;
+            color: #fffd8e;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 10px;
+            text-decoration: underline;
+        }
+
+        #info button:hover {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Новогодние подарки 2026!</h1>
+
+    <div id="info">
+        Осталось подарков: <span id="remaining">10</span><br>
+        Открыто: <span id="opened">0</span> из 3<br>
+        <button id="reset-btn">Сбросить лимит</button>
+    </div>
+
+    <!-- Коробки -->
+    {% for i in range(10) %}
+    <div class="gift-box" data-id="{{ i }}" style="top: {{ positions[i].top }}; left: {{ positions[i].left }};">
+        <img src="/static/lab9/gift{{ i + 1 }}.png" alt="Подарок {{ i + 1 }}" class="box-image">
+    </div>
+    {% endfor %}
+
+    <!-- Модальное окно -->
+    <div id="message">
+        <h2 id="congrats"></h2>
+        <img id="gift-img" src="" alt="Поздравление">
+        <button id="close-msg">Закрыть</button>
+    </div>
+
+    <script>
+        // Снежинки (реже)
+        function createSnowflake() {
+            const snow = document.createElement('div');
+            snow.className = 'snowflake';
+            snow.textContent = '❄';
+            snow.style.left = Math.random() * 100 + 'vw';
+            snow.style.animationDuration = (Math.random() * 15 + 15) + 's';
+            document.body.appendChild(snow);
+            setTimeout(() => snow.remove(), 30000);
+        }
+        setInterval(createSnowflake, 800);
+
+        // Начальное состояние
+        fetch('/lab9/status')
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('remaining').textContent = data.remaining;
+                document.getElementById('opened').textContent = data.opened_count;
+            });
+
+        // Клик по коробке
+        document.querySelectorAll('.gift-box').forEach(box => {
+            box.addEventListener('click', function() {
+                if (this.classList.contains('opened')) return;
+
+                const boxId = parseInt(this.dataset.id);
+
+                fetch('/lab9/open', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ box_id: boxId })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        this.classList.add('opened');
+
+                        document.getElementById('congrats').textContent = data.text;
+                        document.getElementById('gift-img').src = data.img;
+                        document.getElementById('message').style.display = 'block';
+
+                        document.getElementById('remaining').textContent = data.remaining;
+                        document.getElementById('opened').textContent = data.opened_count;
+                    } else {
+                        alert(data.message);
+                    }
+                });
+            });
+        });
+
+        // Сброс лимита
+        document.getElementById('reset-btn').addEventListener('click', function() {
+            if (confirm('Сбросить лимит?')) {
+                fetch('/lab9/reset', { method: 'POST' })
+                    .then(r => r.json())
+                    .then(data => {
+                        document.getElementById('opened').textContent = data.opened_count;
+                        document.getElementById('remaining').textContent = data.remaining;
+                        alert(data.message);
+                    });
+            }
+        });
+
+        // Закрытие модалки
+        document.getElementById('close-msg').addEventListener('click', () => {
+            document.getElementById('message').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
