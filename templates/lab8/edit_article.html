@@ -4,8 +4,12 @@
 <h2>Редактирование статьи</h2>
 
 <form method="post">
-    <input type="text" name="title" value="{{ article.title }}">
-    <textarea name="text">{{ article.article_text }}</textarea>
+    <div>
+        <input type="text" name="title" value="{{ article.title }}">
+    </div>
+    <div>
+        <textarea name="text">{{ article.article_text }}</textarea>
+    </div>
     <button type="submit">Сохранить</button>
 </form>
 {% endblock %}
