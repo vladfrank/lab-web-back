@@ -23,10 +23,13 @@ login_manager.login_view = 'lab8.login'
 login_manager.init_app(app)
 
 @login_manager.user_loader
-def load_users(login_id):
-    return users.query.get(int(login_id))
+def load_user(user_id):
+    return users.query.get(int(user_id))
 
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'секретно-секретный секрет')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'super-secret-key')
+app.config['REMEMBER_COOKIE_DURATION'] = 60 * 60 * 24 * 7
+app.config['REMEMBER_COOKIE_HTTPONLY'] = True
+app.config['REMEMBER_COOKIE_SECURE'] = False
 app.config['DB_TYPE'] = os.getenv('DB_TYPE', 'postgres')
 
 if app.config['DB_TYPE'] == 'postgres':

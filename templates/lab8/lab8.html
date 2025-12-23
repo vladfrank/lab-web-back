@@ -3,24 +3,28 @@
 {% block lab %}Лабораторная работа 8{% endblock %}
 
 {% block main %}
-    <div class="lab5-container">
-        <h1>База знаний</h1>
-        
-        <div class="user-info">
-            <p>Пользователь: 
-                {% if login %} 
-                    {{ login }} 
-                {% else %} 
-                    Anonymous 
-                {% endif %}
-            </p>
-        </div>
-        
-        <div class="navigation">
-            <a href="/lab8/login" class="nav-button">Вход</a>
-            <a href="/lab8/register" class="nav-button">Регистрация</a>
-            <a href="/lab8/articles" class="nav-button">Все статьи</a>
-            <a href="/lab8/create" class="nav-button">Создать статью</a>
-        </div>
-    </div>
+<h1>База знаний</h1>
+
+<p>
+    Пользователь:
+    {% if current_user.is_authenticated %}
+        {{ current_user.login }}
+    {% else %}
+        Anonymous
+    {% endif %}
+</p>
+
+<div class="navigation">
+    {% if not current_user.is_authenticated %}
+        <a href="/lab8/login">Вход</a>
+        <a href="/lab8/register">Регистрация</a>
+        <a href="/lab8/articles">Все статьи</a>
+    {% endif %}
+
+    {% if current_user.is_authenticated %}
+        <a href="/lab8/articles">Все статьи</a>
+        <a href="/lab8/articles/create">Создать статью</a>
+        <a href="/lab8/logout">Выйти</a>
+    {% endif %}
+</div>
 {% endblock %}

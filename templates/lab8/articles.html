@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block main %}
+<h2>Статьи</h2>
+
+<!-- Поиск -->
+<form method="get" style="margin-bottom: 20px;">
+    <input type="text" name="q" placeholder="Поиск по статьям"
+           value="{{ request.args.get('q', '') }}">
+    <button type="submit">Найти</button>
+</form>
+
+{% if articles %}
+    {% for article in articles %}
+        <div style="
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background-color: #fafafa;
+        ">
+            <h3 style="margin-top: 0;">
+                {{ article.title }}
+                {% if article.is_public %}
+                    <span style="font-size: 0.8em; color: green;">
+                        (публичная)
+                    </span>
+                {% else %}
+                    <span style="font-size: 0.8em; color: #999;">
+                        (приватная)
+                    </span>
+                {% endif %}
+            </h3>
+
+            <p style="white-space: pre-line; margin-top: 10px;">
+                {{ article.article_text }}
+            </p>
+
+            {% if current_user.is_authenticated and article.login_id == current_user.id %}
+                <div style="margin-top: 12px;">
+                    <a href="/lab8/articles/edit/{{ article.id }}"> Редактировать</a>
+                    |
+                    <a href="/lab8/articles/delete/{{ article.id }}"
+                        onclick="return confirm('Удалить статью?');">
+                        Удалить
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% else %}
+    <p>Статей пока нет.</p>
+{% endif %}
+
+<a href="/lab8">На главную</a>
+{% endblock %}
